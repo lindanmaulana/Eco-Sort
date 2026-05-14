@@ -874,8 +874,7 @@ Transform:
   m_LocalPosition: {x: 524.8602, y: 1026.7683, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1370819975}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1179799993
@@ -1079,7 +1078,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.012384951, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1115,6 +1114,7 @@ GameObject:
   - component: {fileID: 1370819975}
   - component: {fileID: 1370819974}
   - component: {fileID: 1370819976}
+  - component: {fileID: 1370819977}
   m_Layer: 0
   m_Name: App_Manager
   m_TagString: Untagged
@@ -1145,11 +1145,11 @@ Transform:
   m_GameObject: {fileID: 1370819973}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 19.623047, y: -63.862488, z: 0}
+  m_LocalPosition: {x: 544.4833, y: 962.9058, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1063306626}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1370819976
 MonoBehaviour:
@@ -1163,6 +1163,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41311853893ffb64f9273640d15791cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AppSettingManager
+--- !u!114 &1370819977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370819973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0f61f3bf8f93bb49998464eb9f2dd01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AppInventoryManager
+  trashBinMasterData:
+  - {fileID: 11400000, guid: ed9580da9b365424ca32ef9825bace89, type: 2}
+  - {fileID: 11400000, guid: d8d0b2b22157c5242993efd7e03210e3, type: 2}
+  - {fileID: 11400000, guid: 637351391c55d42499699ec1b2aebdf9, type: 2}
+  - {fileID: 11400000, guid: 3a8a7a0b4d442a1438787f5bc8a4f911, type: 2}
+  - {fileID: 11400000, guid: 4b7e613ccbb37b64d8e542e909a3208b, type: 2}
+  - {fileID: 11400000, guid: 8aadf6ccf008e394e99755b3f8281e9c, type: 2}
+  - {fileID: 11400000, guid: 9d7d32eb7abad6b46ababec1fd999d67, type: 2}
+  - {fileID: 11400000, guid: 1a7997026c7dfdb489c84f14c4a3a277, type: 2}
+  - {fileID: 11400000, guid: c43d3946bace9ee4fa0d733a7ae45a66, type: 2}
+  - {fileID: 11400000, guid: 525b80962cfc85648a4f96e545c8ced4, type: 2}
+  - {fileID: 11400000, guid: 3687e6b5b0f58ba48bcbd1f5a17170c8, type: 2}
+  - {fileID: 11400000, guid: 263512569801885439832c5a694d8af5, type: 2}
+  totalCoins: 0
+  playerInventory: []
+  userEquippedOrganic: 
+  userEquippedAnorganic: 
+  userEequippedB3: 
 --- !u!1 &1384257739
 GameObject:
   m_ObjectHideFlags: 0
@@ -1230,7 +1260,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -240}
-  m_SizeDelta: {x: 160, y: 20}
+  m_SizeDelta: {x: 160, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1403921679
 MonoBehaviour:
@@ -1772,3 +1802,4 @@ SceneRoots:
   - {fileID: 1733666809}
   - {fileID: 430006201}
   - {fileID: 1063306626}
+  - {fileID: 1370819975}

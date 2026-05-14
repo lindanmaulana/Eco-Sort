@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46840064d8a1bb44db4789825dbafe52, type: 3}
+  m_Name: BinB3V3
+  m_EditorClassIdentifier: Assembly-CSharp::TrashBinData
+  binName: B3_V3
+  binIcon: {fileID: 3128237140374277719, guid: 662df76140168b048a133f0ca8cb1e22, type: 3}
+  type: 2
+  basePrice: 15000
+  baseCapacity: 400
+  maxLevel: 5
+  upgradeCostPerLevel: 2500
+  capacityBonusPerLevel: 100

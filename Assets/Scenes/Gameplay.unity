@@ -509,9 +509,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 299122097}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef00376eb24120941a5b6ef055e08c39, type: 3}
+  m_Script: {fileID: 11500000, guid: 6122c78127b03c84aa1705b679ef2514, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MainMenuManager
+  m_EditorClassIdentifier: Assembly-CSharp::GamePlay
+  backgroundGameplay: {fileID: 261371266}
+  tbOrganik: {fileID: 167083368}
+  tbAnOrganik: {fileID: 1591038756}
+  tbB3: {fileID: 1560627494}
+  barTbOrganik: {fileID: 171665599}
+  barTbAnOrganik: {fileID: 1566244485}
+  barTbB3: {fileID: 480030009}
+  txtTbBarOrganik: {fileID: 1451086041}
+  txtTbBarAnOrganik: {fileID: 324128869}
+  txtTbBarB3: {fileID: 493320904}
 --- !u!1 &324128867
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,7 +702,7 @@ GameObject:
   - component: {fileID: 480030009}
   - component: {fileID: 480030008}
   m_Layer: 5
-  m_Name: Slider_Tb_Organik
+  m_Name: Slider_Tb_B3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1427,7 +1437,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 40
+  m_Spacing: 60
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -2149,7 +2159,7 @@ GameObject:
   - component: {fileID: 1560627494}
   - component: {fileID: 1560627493}
   m_Layer: 5
-  m_Name: Img_Tb_Organik
+  m_Name: Img_Tb_B3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2244,7 +2254,7 @@ GameObject:
   - component: {fileID: 1566244485}
   - component: {fileID: 1566244484}
   m_Layer: 5
-  m_Name: Slider_Tb_Organik
+  m_Name: Slider_Tb_AnOrganik
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2420,7 +2430,7 @@ GameObject:
   - component: {fileID: 1591038756}
   - component: {fileID: 1591038755}
   m_Layer: 5
-  m_Name: Img_Tb_Organik
+  m_Name: Img_Tb_AnOrganik
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

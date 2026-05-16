@@ -21,7 +21,6 @@ public class AppInventoryManager: MonoBehaviour
     public string userEquippedAnorganic;
     public string userEequippedB3;
 
-
     void Awake()
     {
         if (instance == null)
@@ -35,8 +34,6 @@ public class AppInventoryManager: MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    // CUSTOM METHOD Inventory
     public void LoadInventory()
     {
         totalCoins = PlayerPrefs.GetInt("UserCoins", 50);
@@ -100,6 +97,29 @@ public class AppInventoryManager: MonoBehaviour
         }
     }
 
+
+    public void UpgradeOwnedBin(string binName)
+    {
+        OwnedBin binToUpgrade = playerInventory.Find(b => b.binName == binName);
+
+        if (binToUpgrade != null)
+        {
+            TrashBinData masterData = GetDataFromMaster(binName);
+
+            if (binToUpgrade.currentLevel < masterData.maxLevel)
+            {
+                binToUpgrade.currentLevel++;
+
+                SaveInventory();
+
+                Debug.Log($"{binName} sekarang level {binToUpgrade.currentLevel}");
+            } else
+            {
+                Debug.Log("Sudah mencapai level maksimal!");
+            }
+        }
+    }
+
     // Fungsi untuk menambah barang baru ke daftar milik user
     public void AddBinToPlayerInventory(string name)
     {
@@ -138,6 +158,13 @@ public class AppInventoryManager: MonoBehaviour
     public TrashBinData GetDataFromMaster(string name)
     {
         return trashBinMasterData.Find(bin => bin.binName == name);
+    }
+
+    public int GetBinLevel(string name)
+    {
+        OwnedBin bin = playerInventory.Find(b => b.binName == name);
+
+        return (bin != null) ? bin.currentLevel : 1;
     }
 
     public void LoadDataCoins()

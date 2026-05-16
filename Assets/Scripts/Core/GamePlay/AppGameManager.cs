@@ -59,6 +59,11 @@ public class AppGameManager: MonoBehaviour
         if (bin.TryGetComponent<TrashBin>(out TrashBin binScript))
         {
             binScript.binType = type;
+
+            binScript.binData = data;
+
+            binScript.currentLevel = AppInventoryManager.instance.GetBinLevel(data.binName);
+            binScript.InitializeBin();
         }
     }
 }

@@ -6,30 +6,34 @@ public class TrashBin : MonoBehaviour
 {
     // Ini untuk menentukan tong ini jenis apa (Organik/Anorganik/B3)
     // Nilainya akan diisi otomatis oleh AppGameManager saat game mulai
+    public TrashBinData binData;
+    public int currentLevel = 1;
     public EcoGarbageCategory binType; 
 
     [Header("UI Settings")]
     public Slider capacityBar;
     public TextMeshProUGUI capacityText;
-    public float currentAmount = 0f;
-    public float maxAmount = 100f;
+    private float currentAmount = 0f;
+    private float calculatedMaxCapacity;
 
     void Start()
     {
-        UpdateUI();
+        if (binData)
+        {
+            calculatedMaxCapacity = binData.GetTotalCapacity(currentLevel);
+
+            UpdateUI();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-
-        Debug.Log("Sesuatu masuk ke area Tong: " + other.name);
-        // Cek apakah benda yang masuk punya script GarbageItem
         GarbageItem item = other.GetComponent<GarbageItem>();
         WasteDraggable dragScript = other.GetComponent<WasteDraggable>();
 
-        // 2. Cek apakah yang masuk benar-benar objek sampah
         if (item != null && item.data != null && dragScript != null)
         {
+
             if (!dragScript.wasDraggedByPlayer)
             {
                 Debug.Log("Cuma numpang lewat, jangan ditangkep.");
@@ -38,16 +42,11 @@ public class TrashBin : MonoBehaviour
 
             GarbageData data = item.data;
 
-            // 3. Bandingkan: Apakah tipe sampah sama dengan tipe tong ini?
             if (data.type == binType)
             {
                 Debug.Log("BENAR! Membuang: " + data.garbageName);
-                // Tambah skor di sini nanti
 
-                if (capacityBar)
-                {
-                    capacityBar.value = currentAmount;
-                }
+                AddProgress(10f);
             }
             else
             {
@@ -59,24 +58,37 @@ public class TrashBin : MonoBehaviour
         }
     }
 
-
     void AddProgress(float amount)
     {
         currentAmount += amount;
-        currentAmount = Mathf.Clamp(currentAmount, 0, maxAmount);
+        currentAmount = Mathf.Clamp(currentAmount, 0, binData.baseCapacity);
+
         UpdateUI();
     }
     void UpdateUI()
     {
         if (capacityBar)
         {
-            capacityBar.maxValue = maxAmount;
+            capacityBar.maxValue = calculatedMaxCapacity;
             capacityBar.value = currentAmount;
         }
 
         if (capacityText)
         {
-            capacityText.text = currentAmount.ToString() + " / " + maxAmount.ToString();
+            capacityText.text = calculatedMaxCapacity.ToString() + " / " + calculatedMaxCapacity.ToString();
+        }
+    }
+
+    public void InitializeBin()
+    {
+        if (binData)
+        {
+            calculatedMaxCapacity = binData.GetTotalCapacity(currentLevel);
+
+            currentAmount = 0;
+
+            UpdateUI();
+            Debug.Log($"Tong {binType} siap! Level: {currentLevel}, Kapasitas: {calculatedMaxCapacity}");
         }
     }
 }

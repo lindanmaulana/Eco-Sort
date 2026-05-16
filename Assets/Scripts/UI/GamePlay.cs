@@ -22,7 +22,4 @@ public class GamePlay: MonoBehaviour
     public TMP_Text txtTbBarOrganik;
     public TMP_Text txtTbBarAnOrganik;
     public TMP_Text txtTbBarB3;
-
-
-    
 }

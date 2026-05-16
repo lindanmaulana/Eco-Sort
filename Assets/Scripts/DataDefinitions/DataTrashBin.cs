@@ -1,14 +1,12 @@
 using UnityEngine;
 
-public enum TrashBinType { Organic, Inorganic, B3 }
-
 [CreateAssetMenu(fileName = "Data Trash Bin", menuName = "SistemGame/DataTrashBin")]
 public class TrashBinData: ScriptableObject
 {
     [Header("Basic Information")]
     public string binName;
     public Sprite binIcon; 
-    public TrashBinType type;
+    public EcoGarbageCategory type;
 
     [Header("Stats & Economy")]
     public int basePrice;

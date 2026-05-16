@@ -8,6 +8,7 @@ public class AppInventoryManager: MonoBehaviour
 
    [Header("Systems - Master Data")]
     public List<TrashBinData> trashBinMasterData;
+    public List<GarbageData> garbageMasterData;
 
 
     [Header("User Data")]
@@ -19,6 +20,7 @@ public class AppInventoryManager: MonoBehaviour
     public string userEquippedOrganic;
     public string userEquippedAnorganic;
     public string userEequippedB3;
+
 
     void Awake()
     {
@@ -39,20 +41,20 @@ public class AppInventoryManager: MonoBehaviour
     {
         totalCoins = PlayerPrefs.GetInt("UserCoins", 50);
 
-        userEquippedOrganic = PlayerPrefs.GetString("User_Equipped_Organic", "Organik_Starter");
-        userEquippedAnorganic = PlayerPrefs.GetString("User_Equipped_Anorganic", "Anorganik_Starter");
-        userEequippedB3 = PlayerPrefs.GetString("User_Equipped_B3", "B3_Starter");
+        userEquippedOrganic = PlayerPrefs.GetString("User_Equipped_Organic", "BinStarterOrganik");
+        userEquippedAnorganic = PlayerPrefs.GetString("User_Equipped_Anorganic", "BinStarterAnorganik");
+        userEequippedB3 = PlayerPrefs.GetString("User_Equipped_B3", "BinStarterB3");
 
         if (!PlayerPrefs.HasKey("InventorySaved")) {
             playerInventory.Clear();
 
-            AddBinToPlayerInventory("Organik_Starter");
-            AddBinToPlayerInventory("Anorganik_Starter");
-            AddBinToPlayerInventory("B3_Starter");
+            AddBinToPlayerInventory("BinStarterOrganik");
+            AddBinToPlayerInventory("BinStarterAnorganik");
+            AddBinToPlayerInventory("BinStarterB3");
 
-            PlayerPrefs.SetString("User_Equipped_Organic", "Organik_Starter");
-            PlayerPrefs.SetString("User_Equipped_Anorganic", "Anorganik_Starter");
-            PlayerPrefs.SetString("User_Equipped_B3", "B3_Starter");
+            PlayerPrefs.SetString("User_Equipped_Organic", "BinStarterOrganik");
+            PlayerPrefs.SetString("User_Equipped_Anorganic", "BinStarterAnorganik");
+            PlayerPrefs.SetString("User_Equipped_B3", "BinStarterB3");
             
             PlayerPrefs.SetInt("InventorySaved", 1);
             SaveInventory();
@@ -76,13 +78,13 @@ public class AppInventoryManager: MonoBehaviour
         {
             switch (data.type)
             {
-                case TrashBinType.Organic:
+                case EcoGarbageCategory.Organic:
                     userEquippedOrganic = binNameToEquip;
                     break;
-                case TrashBinType.Inorganic:
+                case EcoGarbageCategory.Inorganic:
                     userEquippedAnorganic = binNameToEquip;
                     break;
-                case TrashBinType.B3:
+                case EcoGarbageCategory.B3:
                     userEequippedB3 = binNameToEquip;
                     break;
             }

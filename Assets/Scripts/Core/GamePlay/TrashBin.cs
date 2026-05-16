@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class TrashBin : MonoBehaviour
 {
@@ -6,8 +8,21 @@ public class TrashBin : MonoBehaviour
     // Nilainya akan diisi otomatis oleh AppGameManager saat game mulai
     public EcoGarbageCategory binType; 
 
+    [Header("UI Settings")]
+    public Slider capacityBar;
+    public TextMeshProUGUI capacityText;
+    public float currentAmount = 0f;
+    public float maxAmount = 100f;
+
+    void Start()
+    {
+        UpdateUI();
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
+
+        Debug.Log("Sesuatu masuk ke area Tong: " + other.name);
         // Cek apakah benda yang masuk punya script GarbageItem
         GarbageItem item = other.GetComponent<GarbageItem>();
         WasteDraggable dragScript = other.GetComponent<WasteDraggable>();
@@ -28,6 +43,11 @@ public class TrashBin : MonoBehaviour
             {
                 Debug.Log("BENAR! Membuang: " + data.garbageName);
                 // Tambah skor di sini nanti
+
+                if (capacityBar)
+                {
+                    capacityBar.value = currentAmount;
+                }
             }
             else
             {
@@ -36,6 +56,27 @@ public class TrashBin : MonoBehaviour
             }
 
             Destroy(other.gameObject);
+        }
+    }
+
+
+    void AddProgress(float amount)
+    {
+        currentAmount += amount;
+        currentAmount = Mathf.Clamp(currentAmount, 0, maxAmount);
+        UpdateUI();
+    }
+    void UpdateUI()
+    {
+        if (capacityBar)
+        {
+            capacityBar.maxValue = maxAmount;
+            capacityBar.value = currentAmount;
+        }
+
+        if (capacityText)
+        {
+            capacityText.text = currentAmount.ToString() + " / " + maxAmount.ToString();
         }
     }
 }

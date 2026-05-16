@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8548201958544227204}
   - component: {fileID: 189743759232809519}
   - component: {fileID: -8997032101544224641}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TIIndomie
   m_TagString: Untagged
   m_Icon: {fileID: 0}

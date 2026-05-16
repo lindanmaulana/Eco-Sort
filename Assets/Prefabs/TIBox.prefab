@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8548201958544227204}
   - component: {fileID: 189743759232809519}
   - component: {fileID: 6149894871217579345}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TIBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8548201958544227204}
   - component: {fileID: 189743759232809519}
   - component: {fileID: 5417189997445758980}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TBSpray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,4 +193,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f991fdfd0363afb47a3aa761c241162e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WasteDraggable
+  wasDraggedByPlayer: 0
   constantSpeed: 3

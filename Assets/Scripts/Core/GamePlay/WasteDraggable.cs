@@ -62,18 +62,11 @@ public class WasteDraggable : MonoBehaviour
         isDragging = true;
         wasDraggedByPlayer = true;
         rb.linearVelocity = Vector2.zero;
-
-        // Bikin sampah jadi "Trigger" supaya bisa masuk ke dalam tong (nembus)
-        GetComponent<Collider2D>().isTrigger = true;
     }
 
     private void OnMouseUp()
     {
         isDragging = false;
-
-        // Kembalikan jadi benda padat supaya kalau nabrak tong dia MENTAL (bukan masuk)
-        GetComponent<Collider2D>().isTrigger = false;
-
         Launch();
     }
 }

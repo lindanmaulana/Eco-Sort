@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class AppGameManager: MonoBehaviour
 {
@@ -16,6 +17,11 @@ public class AppGameManager: MonoBehaviour
     private TrashBinData currentOrganicData;
     private TrashBinData currentInorganicData;
     private TrashBinData currentB3Data;
+
+
+    [Header("Statistik Sementara Level Ini")]
+    public int coins;
+    public List<GarbageData> garbageHistory = new List<GarbageData>();
 
     void Start()
     {
@@ -59,11 +65,30 @@ public class AppGameManager: MonoBehaviour
         if (bin.TryGetComponent<TrashBin>(out TrashBin binScript))
         {
             binScript.binType = type;
-
             binScript.binData = data;
 
             binScript.currentLevel = AppInventoryManager.instance.GetBinLevel(data.binName);
             binScript.InitializeBin();
         }
+    }
+
+    public void RecordGarbageEntry(GarbageData enteredGarbage)
+    {
+        garbageHistory.Add(enteredGarbage);
+
+        coins += enteredGarbage.scorePoint;
+
+        Debug.Log("Successfully recorded: " + enteredGarbage.garbageName);
+
+        // 3. CODE BARU: Print seluruh isi list ke Console
+        Debug.Log($"--- RIWAYAT SAMPAH TERBARU (Total: {garbageHistory.Count}) ---");
+        
+        for (int i = 0; i < garbageHistory.Count; i++)
+        {
+            // Kita print nomor urut, nama sampah, dan tipenya
+            Debug.Log($"[{i + 1}] {garbageHistory[i].garbageName} ({garbageHistory[i].type})");
+        }
+        
+        Debug.Log("------------------------------------------------");
     }
 }

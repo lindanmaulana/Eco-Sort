@@ -34,26 +34,28 @@ public class AppInventoryManager: MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+
     public void LoadInventory()
     {
-        totalCoins = PlayerPrefs.GetInt("UserCoins", 50);
+        LoadDataCoins();
 
-        userEquippedOrganic = PlayerPrefs.GetString("User_Equipped_Organic", "BinStarterOrganik");
-        userEquippedAnorganic = PlayerPrefs.GetString("User_Equipped_Anorganic", "BinStarterAnorganik");
-        userEequippedB3 = PlayerPrefs.GetString("User_Equipped_B3", "BinStarterB3");
+        userEquippedOrganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "BinStarterOrganik");
+        userEquippedAnorganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "BinStarterAnorganik");
+        userEequippedB3 = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_B3, "BinStarterB3");
 
-        if (!PlayerPrefs.HasKey("InventorySaved")) {
+        if (!PlayerPrefs.HasKey(DataKeyPlayerPrefs.INVENTORY_SAVED)) {
             playerInventory.Clear();
 
             AddBinToPlayerInventory("BinStarterOrganik");
             AddBinToPlayerInventory("BinStarterAnorganik");
             AddBinToPlayerInventory("BinStarterB3");
 
-            PlayerPrefs.SetString("User_Equipped_Organic", "BinStarterOrganik");
-            PlayerPrefs.SetString("User_Equipped_Anorganic", "BinStarterAnorganik");
-            PlayerPrefs.SetString("User_Equipped_B3", "BinStarterB3");
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "BinStarterOrganik");
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "BinStarterAnorganik");
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, "BinStarterB3");
             
-            PlayerPrefs.SetInt("InventorySaved", 1);
+            PlayerPrefs.SetInt(DataKeyPlayerPrefs.INVENTORY_SAVED, 1);
             SaveInventory();
         } else
         {
@@ -61,10 +63,30 @@ public class AppInventoryManager: MonoBehaviour
             // Di sini nanti kita pakai JSON untuk muat list playerInventory
             // (Tapi untuk tes sekarang, biarkan list diisi manual atau lewat fungsi Buy)
 
-            string json = PlayerPrefs.GetString("InventoryData");
-            InventoryWrapper wrapper = JsonUtility.FromJson<InventoryWrapper>(json);
-            playerInventory = wrapper.items;
+            if (PlayerPrefs.HasKey(DataKeyPlayerPrefs.INVENTORY_DATA))
+            {
+                string json = PlayerPrefs.GetString(DataKeyPlayerPrefs.INVENTORY_DATA);
+                InventoryWrapper wrapper = JsonUtility.FromJson<InventoryWrapper>(json);
+
+                if (wrapper != null && wrapper.items != null)
+                {
+                    playerInventory = wrapper.items;
+                }
+            }
+
         }
+    }
+
+    public void SaveInventory()
+    {
+        InventoryWrapper wrapper = new InventoryWrapper();
+
+        wrapper.items = playerInventory;
+        string json = JsonUtility.ToJson(wrapper);
+
+        PlayerPrefs.SetString(DataKeyPlayerPrefs.INVENTORY_DATA, json);
+        PlayerPrefs.SetInt(DataKeyPlayerPrefs.USER_COINS, totalCoins);
+        PlayerPrefs.Save();
     }
 
     public void EquipBin(string binNameToEquip) {
@@ -88,9 +110,9 @@ public class AppInventoryManager: MonoBehaviour
 
 
             // Jangan lupa simpan status equip ke PlayerPrefs
-            PlayerPrefs.SetString("User_Equipped_Organic", userEquippedOrganic);
-            PlayerPrefs.SetString("User_Equipped_Anorganic", userEquippedAnorganic);
-            PlayerPrefs.SetString("User_Equipped_B3", userEequippedB3);
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, userEquippedOrganic);
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, userEquippedAnorganic);
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, userEequippedB3);
             PlayerPrefs.Save();
             
             Debug.Log($"Berhasil memasang {binNameToEquip} ke slot {data.type}");
@@ -111,7 +133,6 @@ public class AppInventoryManager: MonoBehaviour
                 binToUpgrade.currentLevel++;
 
                 SaveInventory();
-
                 Debug.Log($"{binName} sekarang level {binToUpgrade.currentLevel}");
             } else
             {
@@ -142,19 +163,6 @@ public class AppInventoryManager: MonoBehaviour
         }
     }
 
-    public void SaveInventory()
-    {
-        InventoryWrapper wrapper = new InventoryWrapper();
-
-        wrapper.items = playerInventory;
-
-        string json = JsonUtility.ToJson(wrapper);
-
-        PlayerPrefs.SetString("InventoryData", json);
-        PlayerPrefs.SetInt("UserCoins", totalCoins);
-        PlayerPrefs.Save();
-    }
-
     public TrashBinData GetDataFromMaster(string name)
     {
         return trashBinMasterData.Find(bin => bin.binName == name);
@@ -169,7 +177,7 @@ public class AppInventoryManager: MonoBehaviour
 
     public void LoadDataCoins()
     {
-        totalCoins = PlayerPrefs.GetInt("UserCoins", 0);
+        totalCoins = PlayerPrefs.GetInt(DataKeyPlayerPrefs.USER_COINS, DataKeyPlayerPrefs.USER_COINS_DEFAULT);
     }
 }
 

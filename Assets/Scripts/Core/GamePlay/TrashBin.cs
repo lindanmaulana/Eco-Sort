@@ -6,6 +6,9 @@ public class TrashBin : MonoBehaviour
 {
     // Ini untuk menentukan tong ini jenis apa (Organik/Anorganik/B3)
     // Nilainya akan diisi otomatis oleh AppGameManager saat game mulai
+    [Header("Manager References")]
+    public AppGameManager gameManager;
+
     public TrashBinData binData;
     public int currentLevel = 1;
     public EcoGarbageCategory binType; 
@@ -16,13 +19,12 @@ public class TrashBin : MonoBehaviour
     private float currentAmount = 0f;
     private float calculatedMaxCapacity;
 
-    void Start()
-    {
-        if (binData)
-        {
-            calculatedMaxCapacity = binData.GetTotalCapacity(currentLevel);
 
-            UpdateUI();
+    public void Start()
+    {
+        if (gameManager == null)
+        {
+            gameManager = FindAnyObjectByType<AppGameManager>();
         }
     }
 
@@ -33,7 +35,6 @@ public class TrashBin : MonoBehaviour
 
         if (item != null && item.data != null && dragScript != null)
         {
-
             if (!dragScript.wasDraggedByPlayer)
             {
                 Debug.Log("Cuma numpang lewat, jangan ditangkep.");
@@ -44,24 +45,35 @@ public class TrashBin : MonoBehaviour
 
             if (data.type == binType)
             {
-                Debug.Log("BENAR! Membuang: " + data.garbageName);
+                if (currentAmount >= calculatedMaxCapacity)
+                {
+                    Debug.LogWarning($"Tong {binType} sudah PENUH! {data.garbageName} tidak bisa masuk.");
+                    
+                    Destroy(other.gameObject); 
+                    return;
+                }
 
-                AddProgress(10f);
+                AddProgress(1f);
+
+                if (gameManager != null)
+                {
+                    gameManager.RecordGarbageEntry(data);
+                }
+
+                Destroy(other.gameObject);
             }
             else
             {
                 Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
-                // Tambah pinalti di sini nanti
+                Destroy(other.gameObject);
             }
-
-            Destroy(other.gameObject);
         }
     }
 
     void AddProgress(float amount)
     {
         currentAmount += amount;
-        currentAmount = Mathf.Clamp(currentAmount, 0, binData.baseCapacity);
+        currentAmount = Mathf.Clamp(currentAmount, 0, calculatedMaxCapacity);
 
         UpdateUI();
     }
@@ -75,12 +87,17 @@ public class TrashBin : MonoBehaviour
 
         if (capacityText)
         {
-            capacityText.text = calculatedMaxCapacity.ToString() + " / " + calculatedMaxCapacity.ToString();
+            capacityText.text = Mathf.RoundToInt(currentAmount).ToString() + " / " + calculatedMaxCapacity.ToString();
         }
     }
 
     public void InitializeBin()
     {
+        if (gameManager == null)
+        {
+            gameManager = FindAnyObjectByType<AppGameManager>();
+        }
+
         if (binData)
         {
             calculatedMaxCapacity = binData.GetTotalCapacity(currentLevel);

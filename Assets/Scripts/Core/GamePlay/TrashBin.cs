@@ -58,6 +58,7 @@ public class TrashBin : MonoBehaviour
                 if (gameManager != null)
                 {
                     gameManager.RecordGarbageEntry(data);
+                    gameManager.CheckWinCondition();
                 }
 
                 Destroy(other.gameObject);
@@ -113,5 +114,10 @@ public class TrashBin : MonoBehaviour
             UpdateUI();
             Debug.Log($"Tong {binType} siap! Level: {currentLevel}, Kapasitas: {calculatedMaxCapacity}");
         }
+    }
+
+    public bool IsBinFull()
+    {
+        return currentAmount >= calculatedMaxCapacity;
     }
 }

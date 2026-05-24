@@ -30,6 +30,10 @@ public class AppGameManager: MonoBehaviour
     public int currentHearts;      
     public bool isGameOver = false;
 
+    [Header("UI Game Over & Win")]
+    public GameObject panelGameWin;
+    public GameObject panelGameOver;
+
     void Start()
     {
         currentHearts = maxHearts;
@@ -109,7 +113,6 @@ public class AppGameManager: MonoBehaviour
         if (isGameOver) return;
 
         currentHearts -= wrongGarbage.penaltyPoint;
-
         Debug.LogWarning($"[PENALTI] {wrongGarbage.garbageName} salah masuk! " + $"-{wrongGarbage.penaltyPoint} Nyawa. Sisa: {currentHearts}/{maxHearts}");
 
         if (HeartsUI != null)
@@ -122,7 +125,46 @@ public class AppGameManager: MonoBehaviour
             currentHearts = 0;
             isGameOver = true;
             Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
-            // TriggerGameOver();
+            TriggerGameOver();
+        }
+    }
+
+    void TriggerGameOver()
+    {
+        isGameOver = true;
+        Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+
+        if (panelGameOver != null)
+        {
+            panelGameOver.SetActive(true); 
+        }
+    }
+
+    public void CheckWinCondition()
+    {
+        if (isGameOver) return;
+
+        TrashBin[] allBins = FindObjectsByType<TrashBin>(FindObjectsInactive.Exclude);
+        bool isAllBinsFull = true;
+
+        foreach (TrashBin bin in allBins)
+        {
+            if (!bin.IsBinFull())
+            {
+                isAllBinsFull = false;
+                break;
+            }
+        }
+
+        if (isAllBinsFull)
+        {
+            isGameOver = true;
+            Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
+            
+            if (panelGameWin != null)
+            {
+                panelGameWin.SetActive(true);
+            }
         }
     }
 }

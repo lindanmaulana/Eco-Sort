@@ -65,6 +65,12 @@ public class TrashBin : MonoBehaviour
             else
             {
                 Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
+
+                if(gameManager != null)
+                {
+                    gameManager.RecordWrongEntry(data);
+                }
+
                 Destroy(other.gameObject);
             }
         }

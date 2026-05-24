@@ -23,8 +23,21 @@ public class AppGameManager: MonoBehaviour
     public int coins;
     public List<GarbageData> garbageHistory = new List<GarbageData>();
 
+
+    [Header("Sistem Nyawa")]
+    public AppHeartsUI HeartsUI;
+    public int maxHearts = 300;      
+    public int currentHearts;      
+    public bool isGameOver = false;
+
     void Start()
     {
+        currentHearts = maxHearts;
+        if (HeartsUI != null)
+        {
+            HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);
+        }
+
         LoadAndSpawn();
     }
 
@@ -80,7 +93,6 @@ public class AppGameManager: MonoBehaviour
 
         Debug.Log("Successfully recorded: " + enteredGarbage.garbageName);
 
-        // 3. CODE BARU: Print seluruh isi list ke Console
         Debug.Log($"--- RIWAYAT SAMPAH TERBARU (Total: {garbageHistory.Count}) ---");
         
         for (int i = 0; i < garbageHistory.Count; i++)
@@ -90,5 +102,27 @@ public class AppGameManager: MonoBehaviour
         }
         
         Debug.Log("------------------------------------------------");
+    }
+
+    public void RecordWrongEntry(GarbageData wrongGarbage)
+    {
+        if (isGameOver) return;
+
+        currentHearts -= wrongGarbage.penaltyPoint;
+
+        Debug.LogWarning($"[PENALTI] {wrongGarbage.garbageName} salah masuk! " + $"-{wrongGarbage.penaltyPoint} Nyawa. Sisa: {currentHearts}/{maxHearts}");
+
+        if (HeartsUI != null)
+        {
+            HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);    
+        }
+
+        if (currentHearts <= 0)
+        {
+            currentHearts = 0;
+            isGameOver = true;
+            Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+            // TriggerGameOver();
+        }
     }
 }

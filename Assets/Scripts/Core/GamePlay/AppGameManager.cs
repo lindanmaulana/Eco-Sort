@@ -131,12 +131,30 @@ public class AppGameManager: MonoBehaviour
 
     void TriggerGameOver()
     {
+        // isGameOver = true;
+        // Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+
+        // if (panelGameOver != null)
+        // {
+        //     panelGameOver.SetActive(true); 
+        // }
+
         isGameOver = true;
         Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
 
+        // 1. LANGSUNG AKTIFKAN PANEL
         if (panelGameOver != null)
         {
             panelGameOver.SetActive(true); 
+        }
+
+        // 2. Matikan spawner sampah agar tidak lahir yang baru
+        Time.timeScale = 0f;
+        GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+        if (spawner != null)
+        {
+            spawner.CancelInvoke("SpawnGarbage"); 
+            spawner.enabled = false;              
         }
     }
 
@@ -165,6 +183,8 @@ public class AppGameManager: MonoBehaviour
             {
                 panelGameWin.SetActive(true);
             }
+
+            Time.timeScale = 0f;
         }
     }
 }

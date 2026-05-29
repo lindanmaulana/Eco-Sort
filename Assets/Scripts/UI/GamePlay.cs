@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GamePlay: MonoBehaviour
 {
@@ -22,4 +23,11 @@ public class GamePlay: MonoBehaviour
     public TMP_Text txtTbBarOrganik;
     public TMP_Text txtTbBarAnOrganik;
     public TMP_Text txtTbBarB3;
+
+    public void HandleChangeScene(string nameScene)
+    {
+        Time.timeScale = 1f;
+        Debug.Log("Tombol diklik! Mencoba berpindah ke scene: " + nameScene);
+        SceneManager.LoadScene(nameScene);
+    }
 }

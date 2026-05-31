@@ -30,12 +30,8 @@ public class AppGameManager: MonoBehaviour
     public int currentHearts;      
     public bool isGameOver = false;
 
-    [Header("UI Game Over & Win")]
-    public GameObject panelGameWin;
-    public GameObject panelGameOver;
-
     void Start()
-    {
+    {        
         currentHearts = maxHearts;
         if (HeartsUI != null)
         {
@@ -123,41 +119,89 @@ public class AppGameManager: MonoBehaviour
         if (currentHearts <= 0)
         {
             currentHearts = 0;
-            isGameOver = true;
-            Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+            Debug.Log("GAME OVER! Nyawa kamu sudah habis!");
             TriggerGameOver();
         }
     }
 
+    // void TriggerGameOver()
+    // {
+    //     // isGameOver = true;
+    //     // Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+
+    //     // if (panelGameOver != null)
+    //     // {
+    //     //     panelGameOver.SetActive(true); 
+    //     // }
+
+    //     if (isGameOver) return;
+    //     isGameOver = true;
+    //     Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+
+    //     // 2. AKTIFKAN PANEL UI VIA MANAGER (Ini ditaruh di atas agar pasti muncul duluan)
+    //     if (AppUIManager.instance != null)
+    //     {
+    //         AppUIManager.instance.ShowGameOver();
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("AppUIManager.instance KOSONG! Pastikan ada objek _UIManager di Scene dan sudah dipasang skrip AppUIManager!");
+    //     }
+
+    //     // 2. Matikan spawner sampah agar tidak lahir yang baru
+    //     GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+    //     if (spawner != null)
+    //     {
+    //         spawner.CancelInvoke("SpawnGarbage"); 
+    //         spawner.enabled = false;              
+    //     }
+    // }
+
     void TriggerGameOver()
     {
-        // isGameOver = true;
-        // Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
-
-        // if (panelGameOver != null)
-        // {
-        //     panelGameOver.SetActive(true); 
-        // }
-
+        if (isGameOver) return;
         isGameOver = true;
-        Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
 
-        // 1. LANGSUNG AKTIFKAN PANEL
-        if (panelGameOver != null)
+        Debug.LogWarning("[GameManager] TriggerGameOver aktif. Memulai pembersihan input...");
+
+        // 1. Matikan spawner dengan aman terlebih dahulu
+        try 
         {
-            panelGameOver.SetActive(true); 
+            GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+            if (spawner != null)
+            {
+                spawner.CancelInvoke("SpawnGarbage"); 
+                spawner.enabled = false;              
+            }
         }
+        catch (System.Exception e) { Debug.LogError("Error matikan spawner: " + e.Message); }
 
-        // 2. Matikan spawner sampah agar tidak lahir yang baru
-        Time.timeScale = 0f;
-        GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
-        if (spawner != null)
+        // 2. FIX UTAMA: Paksa matikan semua skrip seret sampah yang ada di layar
+        // Ini krusial agar tidak ada skrip drag yang mengunci EventSystem di Update() mereka
+        try
         {
-            spawner.CancelInvoke("SpawnGarbage"); 
-            spawner.enabled = false;              
+            WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+            foreach (WasteDraggable garbage in remainingGarbagess)
+            {
+                // Matikan collider fisiknya juga agar tidak memakan raycast mouse
+                if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                
+                garbage.enabled = false; // Matikan skrip drag-nya secara total
+            }
+        }
+        catch (System.Exception e) { Debug.LogError("Error bersihkan sampah di layar: " + e.Message); }
+
+        // 3. Panggil UI Manager di urutan paling akhir setelah pembersihan aman
+        if (AppUIManager.instance != null)
+        {
+            Debug.Log("Panel GameOver trigered");
+            AppUIManager.instance.ShowGameOver();
+        }
+        else
+        {
+            Debug.LogError("AppUIManager.instance tidak ditemukan!");
         }
     }
-
     public void CheckWinCondition()
     {
         if (isGameOver) return;
@@ -179,12 +223,10 @@ public class AppGameManager: MonoBehaviour
             isGameOver = true;
             Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
             
-            if (panelGameWin != null)
+            if (AppUIManager.instance != null)
             {
-                panelGameWin.SetActive(true);
+                AppUIManager.instance.ShowGameWin();
             }
-
-            Time.timeScale = 0f;
         }
     }
 }

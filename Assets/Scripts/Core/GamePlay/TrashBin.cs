@@ -65,13 +65,38 @@ public class TrashBin : MonoBehaviour
             }
             else
             {
+                // Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
+
+                // if (other.TryGetComponent<WasteDraggable>(out WasteDraggable drag)) drag.enabled = false;
+                // if (other.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                
+                // Destroy(other.gameObject);
+
+                // if(gameManager != null)
+                // {
+                //     gameManager.RecordWrongEntry(data);
+                // }
+
                 Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
 
+                // 1. Matikan fungsi drag agar player dipaksa "melepas" sampah secara sistem
+                if (other.TryGetComponent<WasteDraggable>(out WasteDraggable drag)) 
+                {
+                    drag.enabled = false;
+                }
+
+                // 2. Matikan Collider dan Sprite Renderer-nya agar tidak terlihat & tidak bisa diinteraksi
+                if (other.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                if (other.TryGetComponent<SpriteRenderer>(out SpriteRenderer sprite)) sprite.enabled = false;
+
+                // 3. Jalankan logika pengurangan darah & trigger panel Game Over
                 if(gameManager != null)
                 {
                     gameManager.RecordWrongEntry(data);
                 }
 
+                // 4. FIX MUTLAK: Hancurkan objek secara aman TANPA DELAY waktu, 
+                // tapi biarkan Unity menyelesaikannya di akhir siklus frame ini.
                 Destroy(other.gameObject);
             }
         }

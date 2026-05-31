@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class WasteDraggable : MonoBehaviour
 {
+    private AppGameManager gameManager;
 
     [HideInInspector] public bool wasDraggedByPlayer = false;
     private bool isDragging = false;
@@ -28,6 +29,7 @@ public class WasteDraggable : MonoBehaviour
     void Start()
     {
         Launch();
+        gameManager = GameObject.FindAnyObjectByType<AppGameManager>();
     }
 
     void Launch()
@@ -47,6 +49,14 @@ public class WasteDraggable : MonoBehaviour
 
     void Update()
     {
+        // 1. TARUH DI PALING ATAS & PAKSA RESET STATUS DRAG
+        if (gameManager != null && gameManager.isGameOver)
+        {
+            isDragging = false; // Paksa lepas status seret!
+            return; // Keluar dari fungsi, semua kode di bawah dicuekin
+        }
+
+        // 2. SISA KODE DRAG-DROP KAMU YANG LAMA (Ditaruh di bawahnya)
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0;
@@ -71,5 +81,35 @@ public class WasteDraggable : MonoBehaviour
         {
             rb.MovePosition(mouseWorldPos);
         }
+
+        // Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        // Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
+        // mouseWorldPos.z = 0;
+
+        // if (gameManager != null && gameManager.isGameOver)
+        // {
+        //     return;
+        // }
+
+        // if (Mouse.current.leftButton.wasPressedThisFrame)
+        // {
+        //     if (myCollider == Physics2D.OverlapPoint(mouseWorldPos))
+        //     {
+        //         isDragging = true;
+        //         wasDraggedByPlayer = true;
+        //         rb.linearVelocity = Vector2.zero;
+        //     }
+        // }
+
+        // if (Mouse.current.leftButton.wasReleasedThisFrame && isDragging)
+        // {
+        //     isDragging = false;
+        //     Launch();
+        // }
+
+        // if (isDragging)
+        // {
+        //     rb.MovePosition(mouseWorldPos);
+        // }
     }
 }

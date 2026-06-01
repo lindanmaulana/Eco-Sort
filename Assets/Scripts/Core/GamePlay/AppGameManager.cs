@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
 
 public class AppGameManager: MonoBehaviour
@@ -21,6 +22,7 @@ public class AppGameManager: MonoBehaviour
 
     [Header("Statistik Sementara Level Ini")]
     public int coins;
+    public int currentScoreLevel;
     public List<GarbageData> garbageHistory = new List<GarbageData>();
 
 
@@ -30,6 +32,12 @@ public class AppGameManager: MonoBehaviour
     public int currentHearts;      
     public bool isGameOver = false;
 
+
+    [Header("Game Economy Settings")]
+    [Tooltip("Persentase skor yang diubah jadi koin. Contoh: 0.5f berarti koin adalah 50% dari skor.")]
+    [SerializeField] private float coinConversionRate = 0.5f;
+    public static event Action<int, int> OnGameplayDataChanged;
+
     void Start()
     {        
         currentHearts = maxHearts;
@@ -37,6 +45,9 @@ public class AppGameManager: MonoBehaviour
         {
             HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);
         }
+
+        coins = 0;
+        currentScoreLevel = 0;
 
         LoadAndSpawn();
     }
@@ -89,7 +100,10 @@ public class AppGameManager: MonoBehaviour
     {
         garbageHistory.Add(enteredGarbage);
 
-        coins += enteredGarbage.scorePoint;
+        currentScoreLevel += enteredGarbage.scorePoint;
+        int coinGarbage = Mathf.CeilToInt(enteredGarbage.scorePoint * coinConversionRate);
+        coins += coinGarbage;
+        OnGameplayDataChanged?.Invoke(currentScoreLevel, coins);
 
         Debug.Log("Successfully recorded: " + enteredGarbage.garbageName);
 
@@ -97,7 +111,6 @@ public class AppGameManager: MonoBehaviour
         
         for (int i = 0; i < garbageHistory.Count; i++)
         {
-            // Kita print nomor urut, nama sampah, dan tipenya
             Debug.Log($"[{i + 1}] {garbageHistory[i].garbageName} ({garbageHistory[i].type})");
         }
         
@@ -109,7 +122,7 @@ public class AppGameManager: MonoBehaviour
         if (isGameOver) return;
 
         currentHearts -= wrongGarbage.penaltyPoint;
-        Debug.LogWarning($"[PENALTI] {wrongGarbage.garbageName} salah masuk! " + $"-{wrongGarbage.penaltyPoint} Nyawa. Sisa: {currentHearts}/{maxHearts}");
+        Debug.LogWarning($"[PENALTI] {wrongGarbage.garbageName} salah masuk! " + $"-{wrongGarbage.penaltyPoint} Nyawa. Sisa: {currentHearts}/{maxHearts}"); 
 
         if (HeartsUI != null)
         {
@@ -176,8 +189,8 @@ public class AppGameManager: MonoBehaviour
         }
         catch (System.Exception e) { Debug.LogError("Error matikan spawner: " + e.Message); }
 
-        // 2. FIX UTAMA: Paksa matikan semua skrip seret sampah yang ada di layar
-        // Ini krusial agar tidak ada skrip drag yang mengunci EventSystem di Update() mereka
+        CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
         try
         {
             WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
@@ -186,16 +199,17 @@ public class AppGameManager: MonoBehaviour
                 // Matikan collider fisiknya juga agar tidak memakan raycast mouse
                 if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
                 
-                garbage.enabled = false; // Matikan skrip drag-nya secara total
+                garbage.enabled = false;
             }
         }
         catch (System.Exception e) { Debug.LogError("Error bersihkan sampah di layar: " + e.Message); }
 
-        // 3. Panggil UI Manager di urutan paling akhir setelah pembersihan aman
         if (AppUIManager.instance != null)
         {
             Debug.Log("Panel GameOver trigered");
-            AppUIManager.instance.ShowGameOver();
+            // AppUIManager.instance.ShowGameOver();
+            AppUIManager.instance.ShowGameOver(organic, inorganic, b3, currentScoreLevel, coins);
+            ClaimReward();
         }
         else
         {
@@ -222,11 +236,79 @@ public class AppGameManager: MonoBehaviour
         {
             isGameOver = true;
             Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
+            CalculateLevelSummary(out int organic, out int inorganic, out int b3);
             
             if (AppUIManager.instance != null)
             {
                 AppUIManager.instance.ShowGameWin();
             }
+        }
+    }
+
+    // public void CheckWinCondition()
+    // {
+    //     if (isGameOver) return;
+
+    //     TrashBin[] allBins = FindObjectsByType<TrashBin>(FindObjectsInactive.Exclude);
+    //     bool isAllBinsFull = true;
+
+    //     foreach (TrashBin bin in allBins)
+    //     {
+    //         if (!bin.IsBinFull())
+    //         {
+    //             isAllBinsFull = false;
+    //             break;
+    //         }
+    //     }
+
+    //     if (isAllBinsFull)
+    //     {
+    //         isGameOver = true;
+    //         Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
+            
+    //         CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
+    //         try
+    //         {
+    //             WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+    //             foreach (WasteDraggable garbage in remainingGarbagess)
+    //             {
+    //                 if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+    //                 Destroy(garbage.gameObject);
+    //             }
+    //         }
+    //         catch (System.Exception e) { Debug.LogError("Error bersihkan sampah saat menang: " + e.Message); }
+
+    //         if (AppUIManager.instance != null)
+    //         {
+    //             AppUIManager.instance.ShowGameWin(organic, inorganic, b3, currentScoreLevel, coins);
+                
+    //             ClaimReward();
+    //         }
+    //     }
+    // }
+
+    public void ClaimReward()
+    {
+        if (coins > 0)
+        {
+            if (AppInventoryManager.instance != null)
+            {
+                AppInventoryManager.instance.AddCoins(coins);
+            }
+
+            coins = 0; 
+        }
+    }
+
+    private void CalculateLevelSummary(out int o, out int a, out int b3)
+    {
+        o = 0; a = 0; b3 = 0;
+        foreach (GarbageData garbage in garbageHistory)
+        {
+            if (garbage.type == EcoGarbageCategory.Organic) o++;
+            else if (garbage.type == EcoGarbageCategory.Inorganic) a++;
+            else if (garbage.type == EcoGarbageCategory.B3) b3++;
         }
     }
 }

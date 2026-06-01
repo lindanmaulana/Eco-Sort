@@ -27,6 +27,8 @@ public class GamePlay: MonoBehaviour
     public void HandleChangeScene(string nameScene)
     {
         Debug.Log("Tombol diklik! Mencoba berpindah ke scene: " + nameScene);
+        
+        Time.timeScale = 1f;
         SceneManager.LoadScene(nameScene);
     }
 }

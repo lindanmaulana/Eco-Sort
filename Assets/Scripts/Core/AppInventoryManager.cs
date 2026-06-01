@@ -179,6 +179,27 @@ public class AppInventoryManager: MonoBehaviour
     {
         totalCoins = PlayerPrefs.GetInt(DataKeyPlayerPrefs.USER_COINS, DataKeyPlayerPrefs.USER_COINS_DEFAULT);
     }
+
+    public void AddCoins(int amount)
+    {
+        if (amount <= 0) return;
+
+        totalCoins += amount;
+        SaveInventory();
+    }
+
+    public bool SpendCoins(int amount)
+    {
+        if (amount <= 0) return false;
+
+        if (totalCoins < amount)
+            return false;
+
+        totalCoins -= amount;
+        SaveInventory();
+
+        return true;
+    }
 }
 
 

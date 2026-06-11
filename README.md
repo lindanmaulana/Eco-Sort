@@ -77,18 +77,21 @@ Proyek ini menggunakan pendekatan **Data-Driven** dengan memisahkan antara Maste
 
 ## 4. Rencana Selanjutnya (Next Steps)
 
-### 📌 Agenda Utama Besok:
-- [ ] **Sistem Sinkronisasi Data Kemenangan (Game Win UI):**
-  - Mengimplementasikan estafet parameter data `out` (`organic, inorganic, b3`) dari `CheckWinCondition()` di `AppGameManager` ke fungsi `ShowGameWin()` di `AppUIManager`.
-  - Melakukan *drag & drop* komponen referensi `winRecap...` pada Inspector `_UIManager` di Unity Editor agar data tercetak secara dinamis saat menang.
+### 📌 Agenda Utama: Implementasi Alur Multi-Equip Trashbin
 
-### 📌 Fitur Gameplay & Koin:
-- [ ] **Sistem Kalkulasi & Perolehan Koin Real-Time:**
-  - Sinkronisasi teks UI Koin di layar gameplay (HUD utama) agar bertambah dengan animasi/efek teks berdenyut halus (*juice/punch scale*) saat sampah berhasil dipilah.
-  - Memastikan penyimpanan data koin hasil `ClaimReward()` masuk secara permanen ke `PlayerPrefs` menggunakan skrip `DataKeyPlayerPrefs.cs` melalui `AppInventoryManager`.
+- [ ] **Sistem Penyimpanan Equip Berbasis Kategori (Organic, Inorganic, B3):**
+  - Membuat fungsi `EquipBin(TrashBinData binData)` di `AppInventoryManager` menggunakan penyimpanan kunci `PlayerPrefs` dinamis yang dipisah per jenis sampah (cth: `"Equipped_Organic"`, `"Equipped_Inorganic"`, `"Equipped_B3"`).
+  - Membuat fungsi `CheckIfEquipped(TrashBinData binData)` di `AppInventoryManager` untuk mendeteksi secara sensitif versi tong mana yang sedang aktif di kategori terkait (mengembalikan nilai `true` jika cocok).
 
-### 📌 Sistem Upgrade & Toko:
-- [ ] **Sistem Upgrade UI Window:** Pembuatan panel UI toko/shop memanfaatkan fungsi `TryUpgradeBin()` dari `AppInventoryManager` untuk meningkatkan kapasitas tong sampah menggunakan koin yang ditabung.
+- [ ] **Sinkronisasi Logika Klik & UI di Jendela Toko:**
+  - Menyesuaikan perulangan di skrip Toko saat melahirkan kartu kecil agar variabel `isEquipped` langsung membaca fungsi `CheckIfEquipped(itemData)` yang baru dibuat.
+  - Memperbarui fungsi `OnCardButtonClicked(TrashBinData itemData)` di skrip Toko agar mengambil status kepemilikan paling _up-to-date_ dari `playerInventory.Exists` sebelum mengeksekusi perintah pasang (`EquipBin`) atau beli.
+  - Memastikan sistem memanggil kembali fungsi _Refresh UI Toko_ sesaat setelah tombol `EQUIP` berhasil ditekan agar status visual teks tombol berubah secara _real-time_ dari `EQUIP` menjadi `EQUIPPED`.
+
+- [ ] **Penerapan Tong Aktif di Layar Gameplay Utama:**
+  - Menyiapkan logika pembacaan data `PlayerPrefs` kategori aktif ini pada scene gameplay utama saat game dimulai (_Start/Awake_).
+  - Memastikan sistem memunculkan model 3D atau sprite 2D tong sampah yang sesuai dengan versi yang dipilih pemain di menu toko (cth: Jika `"Equipped_Organic"` isinya `"V2"`, maka yang muncul di gameplay adalah Tong Organik V2).
+
 ---
 
-_Dokumen ini dibuat untuk memudahkan sinkronisasi progress pengembangan sistem Eco Garbage Collector._
+## _Dokumen ini dibuat untuk memudahkan sinkronisasi progress pengembangan sistem Eco Garbage Collector._

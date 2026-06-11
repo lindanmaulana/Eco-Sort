@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46840064d8a1bb44db4789825dbafe52, type: 3}
   m_Name: BinOrganikV1
   m_EditorClassIdentifier: Assembly-CSharp::TrashBinData
-  binName: Organik_V1
+  binName: V1
   binIcon: {fileID: -7310094997279416612, guid: 112648fe674d8924fab917a23cf02c91, type: 3}
   type: 0
   basePrice: 50

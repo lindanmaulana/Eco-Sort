@@ -32,6 +32,6 @@ public class MainMenuManager: MonoBehaviour
 
     public void HandleToShop()
     {
-        SceneManager.LoadScene("Shop");
+        SceneManager.LoadScene("ShopV2");
     }
 }

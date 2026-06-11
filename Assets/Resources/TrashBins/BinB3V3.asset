@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46840064d8a1bb44db4789825dbafe52, type: 3}
   m_Name: BinB3V3
   m_EditorClassIdentifier: Assembly-CSharp::TrashBinData
-  binName: B3_V3
+  binName: V3
   binIcon: {fileID: 3128237140374277719, guid: 662df76140168b048a133f0ca8cb1e22, type: 3}
   type: 2
   basePrice: 15000

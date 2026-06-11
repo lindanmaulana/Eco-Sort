@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46840064d8a1bb44db4789825dbafe52, type: 3}
   m_Name: BinAnorganikV2
   m_EditorClassIdentifier: Assembly-CSharp::TrashBinData
-  binName: Anorganik_V2
+  binName: V2
   binIcon: {fileID: 4366552839531137777, guid: 60ce99c7854d4a543967167dd03822cb, type: 3}
   type: 1
   basePrice: 1000

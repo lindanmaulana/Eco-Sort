@@ -41,6 +41,21 @@ Proyek ini menggunakan pendekatan **Data-Driven** dengan memisahkan antara Maste
   - Memvalidasi kecocokan kategori sampah (`EcoGarbageCategory`) dan melaporkan hasil sukses/salah ke `AppGameManager`.
   - Menyediakan fungsi modular `IsBinFull()` untuk melaporkan status kepenuhan tong ke manager.
 
+## 4. Struktur Arsitektur Skrip (Folder Pattern)
+
+Berdasarkan struktur repositori pada `image_846008.png`, manajemen kode diisolasi ke dalam sub-modul modular di bawah arsitektur namespace `Core`:
+
+```text
+Assets/
+└── Scripts/
+    └── Core/
+        ├── GamePlay/           # Logika inti, mekanik, dan manajer sesi permainan.
+        ├── Shop/               # Sistem manajemen data global, transaksi, dan inventori.
+        ├── DataDefinitions/    # Definisi data struktural (ScriptableObjects & Konstanta).
+        ├── UI/                 # Kontroler visual, panel, dan navigasi layar (Canvas).
+        └── Utilities/          # Skrip pembantu/helper dekoratif bersifat reusable.
+```
+
 ---
 
 ## 2. Alur Data (Data Flow)

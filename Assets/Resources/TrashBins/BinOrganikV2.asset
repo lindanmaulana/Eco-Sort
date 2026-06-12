@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46840064d8a1bb44db4789825dbafe52, type: 3}
   m_Name: BinOrganikV2
   m_EditorClassIdentifier: Assembly-CSharp::TrashBinData
+  binID: ov2
   binName: V2
   binIcon: {fileID: 3759682628931920898, guid: a41fd469019246949be1ad82f8b24e50, type: 3}
   type: 0

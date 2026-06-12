@@ -33,28 +33,15 @@ public class Shop: MonoBehaviour
 
         // 2. Ambil List database master langsung dari AppInventoryManager milikmu
         List<TrashBinData> masterDatabase = AppInventoryManager.instance.trashBinMasterData;
-
         foreach (TrashBinData itemData in masterDatabase)
         {
-            // Ambil status kepemilikan barang lewat playerInventory bawaan managermu
-            bool isOwned = AppInventoryManager.instance.playerInventory.Exists(b => b.binName == itemData.binName);
-            
-            // Cek status kecocokan equip berdasarkan kategori tipenya masing-masing
-            bool isEquipped = false;
-            switch (itemData.type)
-            {
-                case EcoGarbageCategory.Organic:
-                    isEquipped = AppInventoryManager.instance.userEquippedOrganic == itemData.binName;
-                    break;
-                case EcoGarbageCategory.Inorganic:
-                    isEquipped = AppInventoryManager.instance.userEquippedAnorganic == itemData.binName;
-                    break;
-                case EcoGarbageCategory.B3:
-                    isEquipped = AppInventoryManager.instance.userEequippedB3 == itemData.binName;
-                    break;
-            }
+            if (itemData == null || string.IsNullOrEmpty(itemData.binID)) continue;
 
-            // Buat objek kartu baru di dalam Grid Layout Group
+            // Ambil status kepemilikan barang lewat playerInventory bawaan managermu
+            bool isOwned = AppInventoryManager.instance.playerInventory.Exists(b => b.binID == itemData.binID);
+
+            // Cek status kecocokan equip berdasarkan kategori tipenya masing-masing    
+            bool isEquipped = AppInventoryManager.instance.CheckIfEquipped(itemData);
             GameObject cardGo = Instantiate(cardPrefab, gridAreaParent);
             AppCardOffer controller = cardGo.GetComponent<AppCardOffer>();
 
@@ -63,32 +50,35 @@ public class Shop: MonoBehaviour
                 // Daftarkan data ke komponen kartu beserta logika tombol kliknya
                 controller.InitializeCard(itemData, isOwned, isEquipped, () =>
                 {
-                    OnCardButtonClicked(itemData, isOwned, isEquipped);
+                    OnCardButtonClicked(itemData);
                 });
             }
         }
     }
 
-    private void OnCardButtonClicked(TrashBinData data, bool isOwned, bool isEquipped)
+    private void OnCardButtonClicked(TrashBinData data)
     {
-        if (isEquipped) return; // Pengaman ganda
+        if (data == null) return;
 
-        if (isOwned)
+        bool currentOwned = AppInventoryManager.instance.playerInventory.Exists(b => b.binID == data.binID);
+        bool currentEquipped = AppInventoryManager.instance.CheckIfEquipped(data);
+
+        if (currentEquipped) return;
+        
+        if (currentOwned)
         {
-            // Jika sudah punya, langsung panggil fungsi pasang bawaan skrip managermu
-            AppInventoryManager.instance.EquipBin(data.binName);
-            Debug.Log($"Memasang tong: {data.binName}");
+            AppInventoryManager.instance.EquipBin(data.binID);
+            Debug.Log($"Memasang tong: {data.binID}");
         }
         else
         {
-            // Jika belum punya, panggil transaksi potong koin dari fungsi SpendCoins milikmu
             bool canBuy = AppInventoryManager.instance.SpendCoins(data.basePrice);
 
             if (canBuy)
             {
-                // Jika koin cukup dan berhasil dipotong, masukkan barang ke inventory permanen
-                AppInventoryManager.instance.AddBinToPlayerInventory(data.binName);
-                Debug.Log($"Berhasil membeli tong: {data.binName}!");
+                AppInventoryManager.instance.AddBinToPlayerInventory(data.binID);
+                AppInventoryManager.instance.EquipBin(data.binID);
+                Debug.Log($"Berhasil membeli tong: {data.binID}!");
             }
             else
             {
@@ -96,7 +86,6 @@ public class Shop: MonoBehaviour
             }
         }
 
-        // 3. Gambar ulang seluruh item toko agar teks status tombol langsung berganti seketika
         RenderShopItems();
     }
 }

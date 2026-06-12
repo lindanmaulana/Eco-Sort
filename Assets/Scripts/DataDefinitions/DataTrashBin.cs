@@ -3,6 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Data Trash Bin", menuName = "SistemGame/DataTrashBin")]
 public class TrashBinData: ScriptableObject
 {
+    [Header("Unique Identifier (TIDAK BOLEH DIUBAH SETELAH DISET)")]
+    [Tooltip("Gunakan ID unik tanpa spasi, contoh: bin_organic_v1, bin_b3_v2")]
+    public string binID;
+    
     [Header("Basic Information")]
     public string binName;
     public Sprite binIcon; 

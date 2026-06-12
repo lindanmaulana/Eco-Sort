@@ -6,7 +6,7 @@ public class AppInventoryManager: MonoBehaviour
 {
     public static AppInventoryManager instance;
 
-   [Header("Systems - Master Data")]
+    [Header("Systems - Master Data")]
     public List<TrashBinData> trashBinMasterData;
     public List<GarbageData> garbageMasterData;
 
@@ -40,20 +40,20 @@ public class AppInventoryManager: MonoBehaviour
     {
         LoadDataCoins();
 
-        userEquippedOrganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "BinStarterOrganik");
-        userEquippedAnorganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "BinStarterAnorganik");
-        userEequippedB3 = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_B3, "BinStarterB3");
+        userEquippedOrganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "so");
+        userEquippedAnorganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "sao");
+        userEequippedB3 = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_B3, "sb3");
 
         if (!PlayerPrefs.HasKey(DataKeyPlayerPrefs.INVENTORY_SAVED)) {
             playerInventory.Clear();
 
-            AddBinToPlayerInventory("BinStarterOrganik");
-            AddBinToPlayerInventory("BinStarterAnorganik");
-            AddBinToPlayerInventory("BinStarterB3");
+            AddBinToPlayerInventory("so");
+            AddBinToPlayerInventory("sao");
+            AddBinToPlayerInventory("sb3");
 
-            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "BinStarterOrganik");
-            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "BinStarterAnorganik");
-            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, "BinStarterB3");
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "so");
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "sao");
+            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, "sb3");
             
             PlayerPrefs.SetInt(DataKeyPlayerPrefs.INVENTORY_SAVED, 1);
             SaveInventory();
@@ -89,68 +89,117 @@ public class AppInventoryManager: MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    public void EquipBin(string binNameToEquip) {
-        TrashBinData data = GetDataFromMaster(binNameToEquip);
+    public void EquipBin(string binID) {
+        TrashBinData data = GetDataFromMaster(binID);
+        
+        if (data == null)
+        {
+            Debug.LogError($"Gagal pasang! Data Master untuk ID: {binID} tidak ditemukan.");
+            return;
+        }
 
-
-        if (playerInventory.Exists(b => b.binName == binNameToEquip))
+        if (playerInventory.Exists(b => b.binID == binID))
         {
             switch (data.type)
             {
                 case EcoGarbageCategory.Organic:
-                    userEquippedOrganic = binNameToEquip;
+                    userEquippedOrganic = binID;
+                    PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, userEquippedOrganic);
                     break;
                 case EcoGarbageCategory.Inorganic:
-                    userEquippedAnorganic = binNameToEquip;
+                    userEquippedAnorganic = binID;
+                    PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, userEquippedAnorganic);
                     break;
                 case EcoGarbageCategory.B3:
-                    userEequippedB3 = binNameToEquip;
+                    userEequippedB3 = binID;
+                    PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, userEequippedB3);
                     break;
+
+                // case EcoGarbageCategory.Organic:
+                //     userEquippedOrganic = binNameToEquip;
+                //     break;
+                // case EcoGarbageCategory.Inorganic:
+                //     userEquippedAnorganic = binNameToEquip;
+                //     break;
+                // case EcoGarbageCategory.B3:
+                //     userEequippedB3 = binNameToEquip;
+                //     break;
             }
 
 
             // Jangan lupa simpan status equip ke PlayerPrefs
-            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, userEquippedOrganic);
-            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, userEquippedAnorganic);
-            PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, userEequippedB3);
             PlayerPrefs.Save();
-            
-            Debug.Log($"Berhasil memasang {binNameToEquip} ke slot {data.type}");
+            Debug.Log($"Berhasil memasang {binID} ke slot {data.type}");
         }
     }
 
-
-    public void UpgradeOwnedBin(string binName)
+    public bool CheckIfEquipped(TrashBinData binData)
     {
-        OwnedBin binToUpgrade = playerInventory.Find(b => b.binName == binName);
+        if (binData == null) return false;
+
+        return binData.type switch
+        {
+            EcoGarbageCategory.Organic => userEquippedOrganic == binData.binID,
+            EcoGarbageCategory.Inorganic => userEquippedAnorganic == binData.binID,
+            EcoGarbageCategory.B3 => userEequippedB3 == binData.binID,
+            _ => false
+        };
+    }
+
+    public void UpgradeOwnedBin(string binID)
+    {
+        OwnedBin binToUpgrade = playerInventory.Find(b => b.binID == binID);
 
         if (binToUpgrade != null)
         {
-            TrashBinData masterData = GetDataFromMaster(binName);
+            TrashBinData masterData = GetDataFromMaster(binID);
 
-            if (binToUpgrade.currentLevel < masterData.maxLevel)
+            if (masterData != null && binToUpgrade.currentLevel < masterData.maxLevel)
             {
                 binToUpgrade.currentLevel++;
-
                 SaveInventory();
-                Debug.Log($"{binName} sekarang level {binToUpgrade.currentLevel}");
+                Debug.Log($"{binID} sekarang level {binToUpgrade.currentLevel}");
             } else
             {
                 Debug.Log("Sudah mencapai level maksimal!");
             }
         }
+        else
+        {
+            Debug.LogError($"Gagal Upgrade! Tong dengan ID {binID} tidak ditemukan di inventory pemain.");
+        }
     }
+    // public void UpgradeOwnedBin(string binName)
+    // {
+    //     OwnedBin binToUpgrade = playerInventory.Find(b => b.binName == binName);
+
+    //     if (binToUpgrade != null)
+    //     {
+    //         TrashBinData masterData = GetDataFromMaster(binName);
+
+    //         if (binToUpgrade.currentLevel < masterData.maxLevel)
+    //         {
+    //             binToUpgrade.currentLevel++;
+
+    //             SaveInventory();
+    //             Debug.Log($"{binName} sekarang level {binToUpgrade.currentLevel}");
+    //         } else
+    //         {
+    //             Debug.Log("Sudah mencapai level maksimal!");
+    //         }
+    //     }
+    // }
 
     // Fungsi untuk menambah barang baru ke daftar milik user
-    public void AddBinToPlayerInventory(string name)
+    public void AddBinToPlayerInventory(string binID)
     {
-        OwnedBin checkBin = playerInventory.Find(b => b.binName == name);
+        OwnedBin checkBin = playerInventory.Find(b => b.binID == binID);
 
         if (checkBin == null)
         {
             OwnedBin newBin = new()
             {
-                binName = name,
+                binID = binID,
                 currentLevel = 1,
             };
 
@@ -163,15 +212,14 @@ public class AppInventoryManager: MonoBehaviour
         }
     }
 
-    public TrashBinData GetDataFromMaster(string name)
+    public TrashBinData GetDataFromMaster(string binID)
     {
-        return trashBinMasterData.Find(bin => bin.binName == name);
+        return trashBinMasterData.Find(bin => bin.binID == binID);
     }
 
-    public int GetBinLevel(string name)
+    public int GetBinLevel(string binID)
     {
-        OwnedBin bin = playerInventory.Find(b => b.binName == name);
-
+        OwnedBin bin = playerInventory.Find(b => b.binID == binID);
         return (bin != null) ? bin.currentLevel : 1;
     }
 
@@ -183,7 +231,6 @@ public class AppInventoryManager: MonoBehaviour
     public void AddCoins(int amount)
     {
         if (amount <= 0) return;
-
         totalCoins += amount;
         SaveInventory();
     }
@@ -191,13 +238,10 @@ public class AppInventoryManager: MonoBehaviour
     public bool SpendCoins(int amount)
     {
         if (amount <= 0) return false;
-
-        if (totalCoins < amount)
-            return false;
+        if (totalCoins < amount) return false;
 
         totalCoins -= amount;
         SaveInventory();
-
         return true;
     }
 }
@@ -206,7 +250,7 @@ public class AppInventoryManager: MonoBehaviour
 [System.Serializable]
 public class OwnedBin
 {
-    public string binName;   
+    public string binID;   
     public int currentLevel;
 }
 

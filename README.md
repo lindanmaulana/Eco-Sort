@@ -106,7 +106,6 @@ Assets/
 - [ ] **Penerapan Tong Aktif di Layar Gameplay Utama:**
   - Menyiapkan logika pembacaan data `PlayerPrefs` kategori aktif ini pada scene gameplay utama saat game dimulai (_Start/Awake_).
   - Memastikan sistem memunculkan model 3D atau sprite 2D tong sampah yang sesuai dengan versi yang dipilih pemain di menu toko (cth: Jika `"Equipped_Organic"` isinya `"V2"`, maka yang muncul di gameplay adalah Tong Organik V2).
-
 ---
 
 ## _Dokumen ini dibuat untuk memudahkan sinkronisasi progress pengembangan sistem Eco Garbage Collector._

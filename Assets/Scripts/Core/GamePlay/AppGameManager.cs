@@ -54,44 +54,91 @@ public class AppGameManager: MonoBehaviour
 
     void LoadAndSpawn()
     {        
-        string organicName = PlayerPrefs.GetString("User_Equipped_Organic", "BinStarterOrganik");
-        string inorganicName = PlayerPrefs.GetString("User_Equipped_Anorganic", "BinStarterAnorganik");
-        string b3Name = PlayerPrefs.GetString("User_Equipped_B3", "BinStarterB3");
+        string organicName = PlayerPrefs.GetString("User_Equipped_Organic", "so");
+        string inorganicName = PlayerPrefs.GetString("User_Equipped_Anorganic", "sao");
+        string b3Name = PlayerPrefs.GetString("User_Equipped_B3", "sb3");
 
-        currentOrganicData = Resources.Load<TrashBinData>("TrashBins/" + organicName);
-        currentInorganicData = Resources.Load<TrashBinData>("TrashBins/" + inorganicName);
-        currentB3Data = Resources.Load<TrashBinData>("TrashBins/" + b3Name);
+        string organicID = AppInventoryManager.instance.userEquippedOrganic;
+        string inorganicID = AppInventoryManager.instance.userEquippedAnorganic;
+        string b3ID = AppInventoryManager.instance.userEequippedB3;
+
+        // currentOrganicData = Resources.Load<TrashBinData>("TrashBins/" + organicName);
+        // currentInorganicData = Resources.Load<TrashBinData>("TrashBins/" + inorganicName);
+        // currentB3Data = Resources.Load<TrashBinData>("TrashBins/" + b3Name);
+
+        currentOrganicData = AppInventoryManager.instance.GetDataFromMaster(organicID);
+        currentInorganicData = AppInventoryManager.instance.GetDataFromMaster(inorganicID);
+        currentB3Data = AppInventoryManager.instance.GetDataFromMaster(b3ID);
         
         // Cek darurat kalau filenya gak ketemu
         if (currentOrganicData == null || currentInorganicData == null || currentB3Data == null) Debug.LogError("Data Tong tidak ditemukan di Resources/TrashBins!");
 
-        SetupBin(posOrganic, currentOrganicData, EcoGarbageCategory.Organic);
-        SetupBin(posInorganic, currentInorganicData, EcoGarbageCategory.Inorganic);
-        SetupBin(posB3, currentB3Data, EcoGarbageCategory.B3);
+        // SetupBin(posOrganic, currentOrganicData, EcoGarbageCategory.Organic);
+        // SetupBin(posInorganic, currentInorganicData, EcoGarbageCategory.Inorganic);
+        // SetupBin(posB3, currentB3Data, EcoGarbageCategory.B3);
+
+        SetupBin(posOrganic, currentOrganicData, EcoGarbageCategory.Organic, organicID);
+        SetupBin(posInorganic, currentInorganicData, EcoGarbageCategory.Inorganic, inorganicID);
+        SetupBin(posB3, currentB3Data, EcoGarbageCategory.B3, b3ID);
     }
 
-    void SetupBin(Transform spawnPos, TrashBinData data, EcoGarbageCategory type)
+    // void SetupBin(Transform spawnPos, TrashBinData data, EcoGarbageCategory type)
+    // {
+    //     if(data == null)
+    //     {
+    //         Debug.LogError($"[AppGameManager] Gagal load data untuk {type}. Cek nama file di Resources/TrashBins!");
+    //         return;
+    //     }
+
+    //     GameObject bin = Instantiate(baseBinPrefab, spawnPos.position, Quaternion.identity);
+    //     bin.name = "Tong_" + type;
+        
+    //     // 1. Ganti gambar tong sesuai data
+    //     SpriteRenderer sr = bin.GetComponent<SpriteRenderer>();
+    //     if (sr != null) sr.sprite = data.binIcon;
+        
+    //     // 2. Set tipe tong di script logic (TrashBin)
+    //     if (bin.TryGetComponent<TrashBin>(out TrashBin binScript))
+    //     {
+    //         binScript.binType = type;
+    //         binScript.binData = data;
+
+    //         binScript.currentLevel = AppInventoryManager.instance.GetBinLevel(data.binName);
+    //         binScript.InitializeBin();
+    //     }
+    // }
+
+    void SetupBin(Transform spawnPos, TrashBinData data, EcoGarbageCategory type, string activeBinID)
     {
         if(data == null)
         {
-            Debug.LogError($"[AppGameManager] Gagal load data untuk {type}. Cek nama file di Resources/TrashBins!");
+            Debug.LogError($"[AppGameManager] Gagal setup tong {type} karena data ScriptableObject kosong!");
+            return;
+        }
+
+        if (baseBinPrefab == null)
+        {
+            Debug.LogError("[AppGameManager] Master Bin Prefab belum dimasukkan di Inspector!");
             return;
         }
 
         GameObject bin = Instantiate(baseBinPrefab, spawnPos.position, Quaternion.identity);
         bin.name = "Tong_" + type;
         
-        // 1. Ganti gambar tong sesuai data
         SpriteRenderer sr = bin.GetComponent<SpriteRenderer>();
-        if (sr != null) sr.sprite = data.binIcon;
+        if (sr != null) 
+        {
+            sr.sprite = data.binIcon;
+        }
         
-        // 2. Set tipe tong di script logic (TrashBin)
         if (bin.TryGetComponent<TrashBin>(out TrashBin binScript))
         {
             binScript.binType = type;
             binScript.binData = data;
 
-            binScript.currentLevel = AppInventoryManager.instance.GetBinLevel(data.binName);
+            var ownedItem = AppInventoryManager.instance.playerInventory.Find(b => b.binID == activeBinID);
+            binScript.currentLevel = (ownedItem != null) ? ownedItem.currentLevel : 1;
+
             binScript.InitializeBin();
         }
     }

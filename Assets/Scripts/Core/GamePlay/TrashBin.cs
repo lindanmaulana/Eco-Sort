@@ -130,10 +130,41 @@ public class TrashBin : MonoBehaviour
             gameManager = FindAnyObjectByType<AppGameManager>();
         }
 
+        if (AppInventoryManager.instance != null)
+        {
+            string activeBinID = "";
+
+            switch(binType)
+            {
+                case EcoGarbageCategory.Organic:
+                    activeBinID = AppInventoryManager.instance.userEquippedOrganic;
+                    break;
+                case EcoGarbageCategory.Inorganic:
+                    activeBinID = AppInventoryManager.instance.userEquippedAnorganic;
+                    break;
+                case EcoGarbageCategory.B3:
+                    activeBinID = AppInventoryManager.instance.userEequippedB3;
+                    break;
+            }
+
+            binData = AppInventoryManager.instance.GetDataFromMaster(activeBinID);
+            var ownedData = AppInventoryManager.instance.playerInventory.Find(b => b.binID == activeBinID);
+            if (ownedData != null)
+            {
+                currentLevel = ownedData.currentLevel;
+            }
+            else
+            {
+                currentLevel = 1;
+            }
+        } else
+        {
+            Debug.LogWarning("AppInventoryManager tidak ditemukan! Menggunakan data fallback di Inspector.");
+        }
+
         if (binData)
         {
             calculatedMaxCapacity = binData.GetTotalCapacity(currentLevel);
-
             currentAmount = 0;
 
             UpdateUI();

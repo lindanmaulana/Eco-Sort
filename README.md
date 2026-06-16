@@ -81,31 +81,33 @@ Assets/
 - [x] **Sistem Win & Lose State Terpusat:**
   - Logika Game Over instan saat darah habis (`<= 0`).
   - Logika Level Win menggunakan metode modern Unity `FindObjectsByType<T>(FindObjectsInactive.Exclude)` untuk memastikan **semua** tong di layar wajib penuh sebelum panel kemenangan dipicu.
-  - Integrasi aktivasi `Panel_GameOver` dan `Panel_GameWin` di dalam scene yang sama tanpa perlu berpindah scene.
+  - Integrasi aktivasi `Panel_GameOver` and `Panel_GameWin` di dalam scene yang sama tanpa perlu berpindah scene.
 - [x] **Fix - Pemicu Pengunci Ganda Game Over:** Menghapus redundansi variabel `isGameOver = true` di dalam fungsi `RecordWrongEntry` yang sebelumnya menyumbat gerbang masuk fungsi `TriggerGameOver()` dan menyebabkan panel UI macet.
 - [x] **Fix - Pemutus Sinkronisasi Input Fisik UI:** Implementasi pemutusan status seret sampah (`isDragging = false`) pada baris teratas fungsi `Update()` di skrip seret, memastikan _EventSystem_ terbebas dari penahanan input _gameplay_ saat panel UI diaktifkan.
 - [x] **Fix - Pembebasan Input Freeze Game Over:** Menemukan dan mengatasi masalah tombol beku akibat fitur _Error Pause_ pada Unity Editor Console saat mendeteksi `Debug.LogError`.
 - [x] **Fix - Pemulihan Waktu Transisi Scene:** Menambahkan `Time.timeScale = 1f` pada fungsi `HandleChangeScene` di `GamePlay.cs` untuk mencegah scene MainMenu tersangkut di layar hijau akibat waktu global yang membeku.
 - [x] **Fix - Dynamic Score & Recap System (Game Over):** Mengintegrasikan fungsi pengekstrakan data riwayat `CalculateLevelSummary` menggunakan parameter `out` untuk menyuplai data jumlah sampah organik, anorganik, B3, grand total, skor, dan koin reward ke `Panel_GameOver` secara dinamis.
+- [x] **Alur Multi-Equip Toko Terintegrasi:** Penyelesaian fungsi `EquipBin` dan `CheckIfEquipped` berbasis kategori (Organic, Inorganic, B3) di dalam `AppInventoryManager` dengan sinkronisasi ID Baru (`ov1`, `aov1`, `b3v1`) yang terhubung langsung ke penyimpanan data lokal.
 
 ---
 
 ## 4. Rencana Selanjutnya (Next Steps)
 
-### 📌 Agenda Utama: Implementasi Alur Multi-Equip Trashbin
+### 📌 Agenda Utama: Penyelesaian & Integrasi Sistem Upgrade Tong Sampah
 
-- [ ] **Sistem Penyimpanan Equip Berbasis Kategori (Organic, Inorganic, B3):**
-  - Membuat fungsi `EquipBin(TrashBinData binData)` di `AppInventoryManager` menggunakan penyimpanan kunci `PlayerPrefs` dinamis yang dipisah per jenis sampah (cth: `"Equipped_Organic"`, `"Equipped_Inorganic"`, `"Equipped_B3"`).
-  - Membuat fungsi `CheckIfEquipped(TrashBinData binData)` di `AppInventoryManager` untuk mendeteksi secara sensitif versi tong mana yang sedang aktif di kategori terkait (mengembalikan nilai `true` jika cocok).
+- [ ] **Setup Akhir Prefab Kartu UI (`TrashBinCard`):**
+  - Menyambungkan komponen UI references (`Image`, `TextMeshPro`, `Slider`, `Button`) dari hierarki objek `Item_Trashbin` ke dalam slot skrip komponen `TrashBinCard`.
+  - Mengubah objek `Item_Trashbin` menjadi Prefab utuh di folder Project bawah dan membersihkan area `Content` di Scroll View agar kosong secara default saat inisialisasi awal.
 
-- [ ] **Sinkronisasi Logika Klik & UI di Jendela Toko:**
-  - Menyesuaikan perulangan di skrip Toko saat melahirkan kartu kecil agar variabel `isEquipped` langsung membaca fungsi `CheckIfEquipped(itemData)` yang baru dibuat.
-  - Memperbarui fungsi `OnCardButtonClicked(TrashBinData itemData)` di skrip Toko agar mengambil status kepemilikan paling _up-to-date_ dari `playerInventory.Exists` sebelum mengeksekusi perintah pasang (`EquipBin`) atau beli.
-  - Memastikan sistem memanggil kembali fungsi _Refresh UI Toko_ sesaat setelah tombol `EQUIP` berhasil ditekan agar status visual teks tombol berubah secara _real-time_ dari `EQUIP` menjadi `EQUIPPED`.
+- [ ] **Sinkronisasi Otak Manager Panel (`UpgradeTrashBinManager`):**
+  - Memastikan slot `Upgrade Card Prefab` dan `Content Container` pada objek `App_Manager` terhubung dengan benar di Inspector Unity.
+  - Melakukan debugging pemanggilan fungsi `RenderUpgradeList()` saat panel dibuka (`OnEnable`) untuk memvalidasi kelahiran kartu secara dinamis berdasarkan isi dari `playerInventory`.
 
-- [ ] **Penerapan Tong Aktif di Layar Gameplay Utama:**
-  - Menyiapkan logika pembacaan data `PlayerPrefs` kategori aktif ini pada scene gameplay utama saat game dimulai (_Start/Awake_).
-  - Memastikan sistem memunculkan model 3D atau sprite 2D tong sampah yang sesuai dengan versi yang dipilih pemain di menu toko (cth: Jika `"Equipped_Organic"` isinya `"V2"`, maka yang muncul di gameplay adalah Tong Organik V2).
+- [ ] **Pengujian Validasi Transaksi & Refresh UI:**
+  - Melakukan uji coba klik tombol upgrade (`TriggerUpgradeProcess`) untuk memastikan koin berkurang secara presisi menggunakan fungsi `SpendCoins` pusat.
+  - Memastikan tingkat level (`currentLevel`) tersimpan aman ke dalam data JSON melalui fungsi `UpgradeOwnedBin` setelah transaksi berhasil.
+  - Memvalidasi efek _real-time refresh_ pada slider level dan teks kapasitas penampungan di layar UI sesaat setelah tombol ditekan tanpa perlu menutup/membuka ulang panel.
+
 ---
 
 ## _Dokumen ini dibuat untuk memudahkan sinkronisasi progress pengembangan sistem Eco Garbage Collector._

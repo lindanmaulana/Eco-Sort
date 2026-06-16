@@ -61,8 +61,7 @@ public class AppUIManager : MonoBehaviour
             TogglePause();
         }
 
-        // FIX LOGIKA BARU: Efek animasi halus mengembalikan ukuran teks ke normal setelah dibusungkan (Punch)
-        // Menggunakan Unscaled Delta Time agar animasi teks tetap bergerak halus meskipun game sedang di-pause/freeze
+
         if (scoreText != null)
         {
             scoreText.transform.localScale = Vector3.Lerp(scoreText.transform.localScale, targetScoreScale, Time.unscaledDeltaTime * animationSpeed);
@@ -81,7 +80,6 @@ public class AppUIManager : MonoBehaviour
         IsPaused = !IsPaused;
         panelPause.SetActive(IsPaused);
         
-        // Menggunakan transisi waktu yang aman untuk New Input System
         Time.timeScale = IsPaused ? 0f : 1f; 
     }
 

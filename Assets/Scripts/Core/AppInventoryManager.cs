@@ -59,10 +59,6 @@ public class AppInventoryManager: MonoBehaviour
             SaveInventory();
         } else
         {
-            // JIKA SUDAH ADA DATA (Pemain Lama):
-            // Di sini nanti kita pakai JSON untuk muat list playerInventory
-            // (Tapi untuk tes sekarang, biarkan list diisi manual atau lewat fungsi Buy)
-
             if (PlayerPrefs.HasKey(DataKeyPlayerPrefs.INVENTORY_DATA))
             {
                 string json = PlayerPrefs.GetString(DataKeyPlayerPrefs.INVENTORY_DATA);
@@ -114,20 +110,8 @@ public class AppInventoryManager: MonoBehaviour
                     userEequippedB3 = binID;
                     PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, userEequippedB3);
                     break;
-
-                // case EcoGarbageCategory.Organic:
-                //     userEquippedOrganic = binNameToEquip;
-                //     break;
-                // case EcoGarbageCategory.Inorganic:
-                //     userEquippedAnorganic = binNameToEquip;
-                //     break;
-                // case EcoGarbageCategory.B3:
-                //     userEequippedB3 = binNameToEquip;
-                //     break;
             }
 
-
-            // Jangan lupa simpan status equip ke PlayerPrefs
             PlayerPrefs.Save();
             Debug.Log($"Berhasil memasang {binID} ke slot {data.type}");
         }
@@ -169,28 +153,6 @@ public class AppInventoryManager: MonoBehaviour
             Debug.LogError($"Gagal Upgrade! Tong dengan ID {binID} tidak ditemukan di inventory pemain.");
         }
     }
-    // public void UpgradeOwnedBin(string binName)
-    // {
-    //     OwnedBin binToUpgrade = playerInventory.Find(b => b.binName == binName);
-
-    //     if (binToUpgrade != null)
-    //     {
-    //         TrashBinData masterData = GetDataFromMaster(binName);
-
-    //         if (binToUpgrade.currentLevel < masterData.maxLevel)
-    //         {
-    //             binToUpgrade.currentLevel++;
-
-    //             SaveInventory();
-    //             Debug.Log($"{binName} sekarang level {binToUpgrade.currentLevel}");
-    //         } else
-    //         {
-    //             Debug.Log("Sudah mencapai level maksimal!");
-    //         }
-    //     }
-    // }
-
-    // Fungsi untuk menambah barang baru ke daftar milik user
     public void AddBinToPlayerInventory(string binID)
     {
         OwnedBin checkBin = playerInventory.Find(b => b.binID == binID);
@@ -211,7 +173,6 @@ public class AppInventoryManager: MonoBehaviour
             Debug.Log("User sudah punya barang ini!");
         }
     }
-
     public TrashBinData GetDataFromMaster(string binID)
     {
         return trashBinMasterData.Find(bin => bin.binID == binID);

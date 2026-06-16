@@ -21,33 +21,27 @@ public class Shop: MonoBehaviour
 
     public void RenderShopItems()
     {
-        // Update jumlah koin di header toko agar terus sinkron saat ada transaksi beli
         if (txtTotalCoins != null) 
             txtTotalCoins.text = AppInventoryManager.instance.totalCoins.ToString();
 
-        // 1. Bersihkan kloningan objek kartu lama agar grid tidak menumpuk
         foreach (Transform child in gridAreaParent)
         {
             Destroy(child.gameObject);
         }
 
-        // 2. Ambil List database master langsung dari AppInventoryManager milikmu
         List<TrashBinData> masterDatabase = AppInventoryManager.instance.trashBinMasterData;
         foreach (TrashBinData itemData in masterDatabase)
         {
             if (itemData == null || string.IsNullOrEmpty(itemData.binID)) continue;
 
-            // Ambil status kepemilikan barang lewat playerInventory bawaan managermu
             bool isOwned = AppInventoryManager.instance.playerInventory.Exists(b => b.binID == itemData.binID);
 
-            // Cek status kecocokan equip berdasarkan kategori tipenya masing-masing    
             bool isEquipped = AppInventoryManager.instance.CheckIfEquipped(itemData);
             GameObject cardGo = Instantiate(cardPrefab, gridAreaParent);
             AppCardOffer controller = cardGo.GetComponent<AppCardOffer>();
 
             if (controller != null)
             {
-                // Daftarkan data ke komponen kartu beserta logika tombol kliknya
                 controller.InitializeCard(itemData, isOwned, isEquipped, () =>
                 {
                     OnCardButtonClicked(itemData);

@@ -31,6 +31,7 @@ public class NavigationManager: MonoBehaviour
 
     public void HandleChangeScene(string sceneName)
     {
+        Time.timeScale = 1f;
         StartCoroutine(LoadScene(sceneName));
     }
 

@@ -21,21 +21,28 @@ public class NavigationManager: MonoBehaviour
 
     public void HandleToMainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        HandleChangeScene("MainMenu");
     }
 
     public void HandleBack()
     {
-        SceneManager.LoadScene(backScene);
+        if (!string.IsNullOrEmpty(backScene))
+        {
+            HandleChangeScene(backScene);
+        }
+        else
+        {
+            Debug.LogWarning("[NavigationManager] Nama backScene belum diisi di Inspector!");
+        }
     }
 
     public void HandleChangeScene(string sceneName)
     {
         Time.timeScale = 1f;
-        StartCoroutine(LoadScene(sceneName));
+        StartCoroutine(LoadSceneRoutine(sceneName));
     }
 
-    IEnumerator LoadScene(string sceneName)
+    IEnumerator LoadSceneRoutine(string sceneName)
     {
         if (transition != null) {
             transition.SetTrigger("Start"); 

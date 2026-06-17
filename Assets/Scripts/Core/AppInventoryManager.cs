@@ -85,6 +85,8 @@ public class AppInventoryManager: MonoBehaviour
         PlayerPrefs.Save();
     }
 
+
+
     public void EquipBin(string binID) {
         TrashBinData data = GetDataFromMaster(binID);
         
@@ -184,6 +186,8 @@ public class AppInventoryManager: MonoBehaviour
         return (bin != null) ? bin.currentLevel : 1;
     }
 
+
+
     public void LoadDataCoins()
     {
         totalCoins = PlayerPrefs.GetInt(DataKeyPlayerPrefs.USER_COINS, DataKeyPlayerPrefs.USER_COINS_DEFAULT);
@@ -193,6 +197,7 @@ public class AppInventoryManager: MonoBehaviour
     {
         if (amount <= 0) return;
         totalCoins += amount;
+
         SaveInventory();
     }
 

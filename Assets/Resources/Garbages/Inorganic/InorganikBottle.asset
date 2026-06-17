@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
+  m_Name: InorganikBottle
+  m_EditorClassIdentifier: Assembly-CSharp::GarbageData
+  garbageName: GarbageInorganikBottle
+  garbageIcon: {fileID: 2115408830169382418, guid: 0c6cf784edca56f4ca7827a1a4497f33, type: 3}
+  type: 1
+  scorePoint: 18
+  penaltyPoint: 12

@@ -1,73 +1,90 @@
-WasterDraggable.cs
+// GarbageSpawner
+
 using UnityEngine;
-using UnityEngine.InputSystem; // Tambahkan ini agar sistem baru terbaca
+using System.Collections;
 
-public class WasteDraggable : MonoBehaviour
+public class GarbageSpawner: MonoBehaviour
 {
-
-    [HideInInspector] public bool wasDraggedByPlayer = false;
-    private bool isDragging = false;
-    private Rigidbody2D rb;
-    private Camera mainCamera;
-
-    [Header("Settings")]
-    public float constantSpeed = 3f;
-
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        mainCamera = Camera.main;
-        
-        if (rb != null) {
-            rb.gravityScale = 0;
-            rb.linearDamping = 0; 
-        }
-    }
+    public GameObject[] garbagePrefabs; // Tempat menaruh prefab biru tadi
+    public float spawnInterval = 1f;    // Muncul setiap 2 detik
+    public Vector2 spawnRangeX = new Vector2(-7f, 7f); // Jarak kiri-kanan
+    public Vector2 spawnRangeY = new Vector2(-4f, 4f); // Jarak atas-bawah
 
     void Start()
     {
-        Launch();
+        // Menjalankan fungsi Spawn setiap beberapa detik
+        InvokeRepeating("SpawnGarbage", 1f, spawnInterval);
     }
 
-    void Launch()
-    {
-        float x = Random.Range(-1f, 1f);
-        float y = Random.Range(-1f, 1f);
-        rb.linearVelocity = new Vector2(x, y).normalized * constantSpeed;
-    }
+    // void SpawnGarbage()
+    // {
+    //     if (garbagePrefabs.Length == 0) return;
 
-    void FixedUpdate()
+    //     // 1. Pilih sampah secara acak dari list
+    //     int randomIndex = Random.Range(0, garbagePrefabs.Length);
+        
+    //     // 2. Tentukan posisi acak di dalam layar
+    //     Vector2 spawnPos = new Vector2(Random.Range(spawnRangeX.x, spawnRangeX.y), Random.Range(spawnRangeY.x, spawnRangeY.y));
+
+    //     // 3. Munculkan sampah
+    //     GameObject go = Instantiate(garbagePrefabs[randomIndex], spawnPos, Quaternion.identity);
+
+    //     // Coba mulai dari 0.4f (40% dari ukuran asli). 
+    //     // Kalau masih kegedean, ganti jadi 0.3f. Kalau kekecilan, ganti jadi 0.6f.
+    //     // go.transform.localScale = new Vector3(0.4f, 0.4f, 1f);
+
+    //     StartCoroutine(ScaleUp(go));
+
+    //     // 4. Beri gerakan acak awal agar sampah tidak diam
+    //     Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+    //     if (rb != null)
+    //     {
+    //         Vector2 randomForce = new Vector2(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+    //         rb.AddForce(randomForce, ForceMode2D.Impulse);
+    //     }
+    // }
+    void SpawnGarbage()
     {
-        if (!isDragging && rb.linearVelocity.magnitude > 0)
+        if (garbagePrefabs.Length == 0) return;
+
+        int randomIndex = Random.Range(0, garbagePrefabs.Length);
+        
+        Vector2 spawnPos = new Vector2(Random.Range(spawnRangeX.x, spawnRangeX.y), Random.Range(spawnRangeY.x, spawnRangeY.y));
+
+        GameObject go = Instantiate(garbagePrefabs[randomIndex], spawnPos, Quaternion.identity);
+
+        StartCoroutine(ScaleUp(go));
+
+        Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+        if (rb != null)
         {
-            rb.linearVelocity = rb.linearVelocity.normalized * constantSpeed;
+            Vector2 randomForce = new Vector2(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+            rb.AddForce(randomForce, ForceMode2D.Impulse);
         }
     }
 
-    void Update()
+    IEnumerator ScaleUp(GameObject target)
     {
-        if (isDragging)
+        if (target == null) yield break;
+
+        target.transform.localScale = Vector3.zero; 
+        float timer = 0f;
+        float duration = 0.2f;
+        Vector3 targetScale = new Vector3(0.4f, 0.4f, 1f); 
+        
+        while (timer < duration)
         {
-            // Cara baru mengambil posisi mouse di Input System Package
-            Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-            Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
-            mouseWorldPos.z = 0;
+            if (target == null) yield break; 
+
+            timer += Time.deltaTime;
+            target.transform.localScale = Vector3.Lerp(Vector3.zero, targetScale, timer / duration);
             
-            rb.MovePosition(mouseWorldPos);
+            yield return null;
         }
-    }
 
-    // Fungsi ini tetap jalan selama kamu punya Physics 2D Raycaster di Camera
-    private void OnMouseDown()
-    {
-        isDragging = true;
-        wasDraggedByPlayer = true;
-        rb.linearVelocity = Vector2.zero;
-    }
-
-    private void OnMouseUp()
-    {
-        isDragging = false;
-        Launch();
+        if (target != null)
+        {
+            target.transform.localScale = targetScale;
+        }
     }
 }

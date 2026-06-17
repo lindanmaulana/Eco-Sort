@@ -19,15 +19,28 @@ public class Loading : MonoBehaviour
 
         StartCoroutine(LoadSceneAsync());
     }
+
+
     IEnumerator LoadSceneAsync()
     {
+        yield return null; 
+
+        while (AppInventoryManager.instance == null)
+        {
+            Debug.Log("Menunggu AppInventoryManager mendaftarkan diri...");
+            yield return null;
+        }
+
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneToLoad);
 
         while(!operation.isDone)
         {
             float progress = Mathf.Clamp01(operation.progress / 0.9f);
             
-            loadingSlider.value = progress;
+            if (loadingSlider != null)
+            {
+                loadingSlider.value = progress;
+            }
 
             yield return null;
         }

@@ -14,6 +14,10 @@ public class TrashBinCard : MonoBehaviour
     public Button btnUpgrade;
     public TextMeshProUGUI txtCost;
 
+
+    [Header("Equip Indicator Setup")]
+    public Image imgIsEquip;
+
     private string currentBinID;
     private System.Action<string> onUpgradeClicked;
 
@@ -26,6 +30,22 @@ public class TrashBinCard : MonoBehaviour
         txtName.text = data.binName;
         txtCategory.text = data.type.ToString();
         txtCost.text = cost.ToString();
+
+
+        if (imgIsEquip != null)
+        {
+            if (AppInventoryManager.instance != null)
+            {
+                bool isCurrentlyEquipped = AppInventoryManager.instance.CheckIfEquipped(data);
+                
+                imgIsEquip.enabled = isCurrentlyEquipped; 
+            }
+            else
+            {
+                imgIsEquip.enabled = false; 
+            }
+        }
+
 
         float currentCap = data.GetTotalCapacity(currentLevel);
         

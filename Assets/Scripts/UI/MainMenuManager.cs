@@ -13,15 +13,21 @@ public class MainMenuManager: MonoBehaviour
 
     public void UpdateCoinDisplay()
     {
+        if (AppInventoryManager.instance == null)
+        {
+            Debug.LogError("BUG: AppInventoryManager.instance KOSONG/NULL! Apakah managernya sudah di-spawn di scene sebelumnya?");
+        }
+        
+        if (coinText == null)
+        {
+            Debug.LogError("BUG: UI TextMeshPro (coinText) belum kamu tarik ke dalam slot Inspector di MainMenuManager!");
+        }
+
         if (AppInventoryManager.instance != null && coinText != null)
         {
             int currentCoin = AppInventoryManager.instance.totalCoins;
             
             coinText.text = currentCoin.ToString();
-        }
-        else
-        {
-            Debug.LogWarning("Manager atau CoinText belum terpasang!");
         }
     }
 

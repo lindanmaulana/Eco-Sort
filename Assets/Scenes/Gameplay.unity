@@ -12278,8 +12278,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1598671676}
-  - component: {fileID: 1598671679}
   - component: {fileID: 1598671678}
+  - component: {fileID: 1598671684}
   - component: {fileID: 1598671677}
   - component: {fileID: 1598671681}
   - component: {fileID: 1598671682}
@@ -12342,37 +12342,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b2ae313a8d291488f80bfdaa52d33c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoundaryCheck
---- !u!114 &1598671679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1598671675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 109982b6857c8864a92b246765337150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GarbageSpawner
-  garbagePrefabs:
-  - {fileID: 7351105256641876055, guid: 4ca0996e0843d1243b00ae627a69196f, type: 3}
-  - {fileID: 7351105256641876055, guid: 8acaf91ce7600a040870992fba38aa46, type: 3}
-  - {fileID: 7351105256641876055, guid: f525077af0b05264288d7b7331d442a3, type: 3}
-  - {fileID: 7351105256641876055, guid: 7c3147817b47f0942b6ba6c6a1e0feb2, type: 3}
-  - {fileID: 7351105256641876055, guid: dd38f4af1915cde43985a0e3ac0c7212, type: 3}
-  - {fileID: 7351105256641876055, guid: efd894d60c9f16847bc9d5c75960cc37, type: 3}
-  - {fileID: 7351105256641876055, guid: 5a9741b633c3e5045be845f4ca65f1e3, type: 3}
-  - {fileID: 7351105256641876055, guid: 4d5e52d4a99abf543bd10ed2a3e977bc, type: 3}
-  - {fileID: 7351105256641876055, guid: 32494c15365d66a4a8fc1f7c6699a990, type: 3}
-  - {fileID: 7351105256641876055, guid: 762acb0d0c6f274479b9123fbcabb0b3, type: 3}
-  - {fileID: 7351105256641876055, guid: 92d2c2932beabea4482c0e33c7b489ff, type: 3}
-  - {fileID: 7351105256641876055, guid: 31f83c958513c7041a1edfbd79d87ae8, type: 3}
-  - {fileID: 7351105256641876055, guid: 37ae492df8113d5468430429ad9102b6, type: 3}
-  - {fileID: 7351105256641876055, guid: 2bc636411e9276145aee3f00c04a9d45, type: 3}
-  - {fileID: 7351105256641876055, guid: 1d9b059a1904ea64ab91d459f6b6891d, type: 3}
-  spawnInterval: 1
-  spawnRangeX: {x: -2.5, y: 2.5}
-  spawnRangeY: {x: -4, y: 4}
 --- !u!114 &1598671681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12425,6 +12394,69 @@ MonoBehaviour:
   backScene: 
   transition: {fileID: 0}
   transitionTime: 1
+--- !u!114 &1598671684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1598671675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 109982b6857c8864a92b246765337150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GarbageSpawner
+  garbagePrefabs:
+  - {fileID: 7351105256641876055, guid: 92d2c2932beabea4482c0e33c7b489ff, type: 3}
+  - {fileID: 7351105256641876055, guid: 31f83c958513c7041a1edfbd79d87ae8, type: 3}
+  - {fileID: 7351105256641876055, guid: 37ae492df8113d5468430429ad9102b6, type: 3}
+  - {fileID: 7351105256641876055, guid: 2bc636411e9276145aee3f00c04a9d45, type: 3}
+  - {fileID: 7351105256641876055, guid: 1d9b059a1904ea64ab91d459f6b6891d, type: 3}
+  - {fileID: 7351105256641876055, guid: 689b53d337ed36944a3840e0f8c8fc5e, type: 3}
+  - {fileID: 7351105256641876055, guid: 9766ceaa0f1e8ed48a28ade935340bc2, type: 3}
+  - {fileID: 7351105256641876055, guid: efd894d60c9f16847bc9d5c75960cc37, type: 3}
+  - {fileID: 7351105256641876055, guid: 5a9741b633c3e5045be845f4ca65f1e3, type: 3}
+  - {fileID: 7351105256641876055, guid: 4d5e52d4a99abf543bd10ed2a3e977bc, type: 3}
+  - {fileID: 7351105256641876055, guid: 32494c15365d66a4a8fc1f7c6699a990, type: 3}
+  - {fileID: 7351105256641876055, guid: 762acb0d0c6f274479b9123fbcabb0b3, type: 3}
+  - {fileID: 7351105256641876055, guid: 864ff7244517f814284a7c44a12af2ec, type: 3}
+  - {fileID: 7351105256641876055, guid: ec15d5b8c32e15048ba8b21df79181fe, type: 3}
+  - {fileID: 7351105256641876055, guid: 4eb6131bc017d9e408cb363279f459a1, type: 3}
+  - {fileID: 7351105256641876055, guid: a4000573de784694d99d82e75d70d19a, type: 3}
+  - {fileID: 7351105256641876055, guid: 4eb3c03511fee674a8418777f0b4ead6, type: 3}
+  - {fileID: 7351105256641876055, guid: 4ca0996e0843d1243b00ae627a69196f, type: 3}
+  - {fileID: 7351105256641876055, guid: 7c3147817b47f0942b6ba6c6a1e0feb2, type: 3}
+  - {fileID: 7351105256641876055, guid: f525077af0b05264288d7b7331d442a3, type: 3}
+  - {fileID: 7351105256641876055, guid: 8acaf91ce7600a040870992fba38aa46, type: 3}
+  - {fileID: 7351105256641876055, guid: dd38f4af1915cde43985a0e3ac0c7212, type: 3}
+  - {fileID: 7351105256641876055, guid: 7b661452901abd447ac43c34e57fbfea, type: 3}
+  - {fileID: 7351105256641876055, guid: 4517c9fa74a7290479501c5894ad9f4b, type: 3}
+  - {fileID: 7351105256641876055, guid: ce1f7aa2ef301ac4aa6ab0359c463e2a, type: 3}
+  - {fileID: 7351105256641876055, guid: 81ff1d08823f93a44b14bd25e8d3be93, type: 3}
+  - {fileID: 7351105256641876055, guid: 552c1e2dde7699e428e85ff7fe7dcba3, type: 3}
+  - {fileID: 7351105256641876055, guid: af0fa4652984b4c49839543cae837469, type: 3}
+  - {fileID: 7351105256641876055, guid: 30afea0b7c365e64a85dceb5eb5d8ce4, type: 3}
+  - {fileID: 7351105256641876055, guid: 092705f88c6cf7c4aa3339c984ab3df7, type: 3}
+  - {fileID: 7351105256641876055, guid: bb9db50127f16b6429ca1cad98344244, type: 3}
+  - {fileID: 7351105256641876055, guid: efaed5fd9a9405f4fa9c38ebbc2dc9db, type: 3}
+  - {fileID: 7351105256641876055, guid: 45f67d81b1c08db4cbb3285916410ca4, type: 3}
+  - {fileID: 7351105256641876055, guid: ed61adfcd35ca964e89b8d2caf6f886b, type: 3}
+  - {fileID: 7351105256641876055, guid: 56ea6b5b950a0e94db1eb33537d4da55, type: 3}
+  - {fileID: 7351105256641876055, guid: eb0d9a72220bf834eb6e09ebaebce946, type: 3}
+  - {fileID: 7351105256641876055, guid: fc4498909966b28499a604f8172401e6, type: 3}
+  - {fileID: 7351105256641876055, guid: 08ece30623569014cbae6b35de4e28b1, type: 3}
+  - {fileID: 7351105256641876055, guid: 931e2ab23911ac8479ec4c1fa83a9a79, type: 3}
+  spawnInterval: 1
+  spawnRangeX: {x: -7, y: 7}
+  spawnRangeY: {x: -4, y: 4}
+  baseSpawnInterval: 2
+  baseMinSpawn: 1
+  baseMaxSpawn: 2
+  difficultyInterval: 60
+  intervalDecrease: 0.25
+  minAllowedInterval: 0.4
+  maxSpawnIncrease: 1
+  absoluteMaxSpawn: 6
 --- !u!1 &1621384476
 GameObject:
   m_ObjectHideFlags: 0
@@ -16682,7 +16714,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2081396099}
-  - component: {fileID: 2081396098}
   m_Layer: 0
   m_Name: GarbageSpawner
   m_TagString: Untagged
@@ -16690,22 +16721,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2081396098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2081396097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 109982b6857c8864a92b246765337150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GarbageSpawner
-  garbagePrefabs: []
-  spawnInterval: 2
-  spawnRangeX: {x: -7, y: 7}
-  spawnRangeY: {x: -4, y: 4}
 --- !u!4 &2081396099
 Transform:
   m_ObjectHideFlags: 0

@@ -1,48 +1,19 @@
-// GarbageSpawner
-
+// Garbage Spawner
 using UnityEngine;
 using System.Collections;
 
 public class GarbageSpawner: MonoBehaviour
 {
-    public GameObject[] garbagePrefabs; // Tempat menaruh prefab biru tadi
-    public float spawnInterval = 1f;    // Muncul setiap 2 detik
-    public Vector2 spawnRangeX = new Vector2(-7f, 7f); // Jarak kiri-kanan
-    public Vector2 spawnRangeY = new Vector2(-4f, 4f); // Jarak atas-bawah
+    public GameObject[] garbagePrefabs; 
+    public float spawnInterval = 1f;   
+    public Vector2 spawnRangeX = new Vector2(-7f, 7f);
+    public Vector2 spawnRangeY = new Vector2(-4f, 4f);
 
     void Start()
     {
-        // Menjalankan fungsi Spawn setiap beberapa detik
         InvokeRepeating("SpawnGarbage", 1f, spawnInterval);
     }
 
-    // void SpawnGarbage()
-    // {
-    //     if (garbagePrefabs.Length == 0) return;
-
-    //     // 1. Pilih sampah secara acak dari list
-    //     int randomIndex = Random.Range(0, garbagePrefabs.Length);
-        
-    //     // 2. Tentukan posisi acak di dalam layar
-    //     Vector2 spawnPos = new Vector2(Random.Range(spawnRangeX.x, spawnRangeX.y), Random.Range(spawnRangeY.x, spawnRangeY.y));
-
-    //     // 3. Munculkan sampah
-    //     GameObject go = Instantiate(garbagePrefabs[randomIndex], spawnPos, Quaternion.identity);
-
-    //     // Coba mulai dari 0.4f (40% dari ukuran asli). 
-    //     // Kalau masih kegedean, ganti jadi 0.3f. Kalau kekecilan, ganti jadi 0.6f.
-    //     // go.transform.localScale = new Vector3(0.4f, 0.4f, 1f);
-
-    //     StartCoroutine(ScaleUp(go));
-
-    //     // 4. Beri gerakan acak awal agar sampah tidak diam
-    //     Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
-    //     if (rb != null)
-    //     {
-    //         Vector2 randomForce = new Vector2(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-    //         rb.AddForce(randomForce, ForceMode2D.Impulse);
-    //     }
-    // }
     void SpawnGarbage()
     {
         if (garbagePrefabs.Length == 0) return;
@@ -71,6 +42,422 @@ public class GarbageSpawner: MonoBehaviour
         float timer = 0f;
         float duration = 0.2f;
         Vector3 targetScale = new Vector3(0.4f, 0.4f, 1f); 
+        
+        while (timer < duration)
+        {
+            if (target == null) yield break; 
+
+            timer += Time.deltaTime;
+            target.transform.localScale = Vector3.Lerp(Vector3.zero, targetScale, timer / duration);
+            
+            yield return null;
+        }
+
+        if (target != null)
+        {
+            target.transform.localScale = targetScale;
+        }
+    }
+}
+
+
+
+
+
+// 2
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class GarbageSpawner : MonoBehaviour
+{
+    public GameObject[] garbagePrefabs; 
+    public float spawnInterval = 1f;   
+    public Vector2 spawnRangeX = new Vector2(-7f, 7f);
+    public Vector2 spawnRangeY = new Vector2(-4f, 4f);
+
+    private List<int> lockedSpawnIndices = new List<int>();
+    private int currentListIndex = 0;
+
+    void Start()
+    {
+        InitializeShuffleDeck();
+        InvokeRepeating("SpawnGarbage", 1f, spawnInterval);
+    }
+
+    void InitializeShuffleDeck()
+    {
+        // LOG 1: Deteksi panjang array yang terpasang di Inspector scene ini
+        Debug.Log($"<color=orange>[Gameplay Spawner]</color> STARTING! Membaca total <color=yellow>{garbagePrefabs.Length}</color> prefab di Inspector.");
+
+        if (garbagePrefabs.Length == 0) 
+        {
+            Debug.LogError("<color=red>[Gameplay Spawner Error]</color> Array garbagePrefabs bernilai 0! Tidak ada sampah yang bisa di-spawn.");
+            return;
+        }
+
+        lockedSpawnIndices.Clear();
+        for (int i = 0; i < garbagePrefabs.Length; i++)
+        {
+            lockedSpawnIndices.Add(i);
+        }
+
+        // Algoritma Fisher-Yates untuk mengocok List
+        for (int i = lockedSpawnIndices.Count - 1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            int temp = lockedSpawnIndices[i];
+            lockedSpawnIndices[i] = lockedSpawnIndices[rnd];
+            lockedSpawnIndices[rnd] = temp;
+        }
+
+        currentListIndex = 0;
+    }
+
+    void SpawnGarbage()
+    {
+        if (garbagePrefabs.Length == 0) return;
+
+        if (currentListIndex >= lockedSpawnIndices.Count)
+        {
+            Debug.Log("<color=orange>[Gameplay Spawner]</color> Siklus putaran antrean selesai. Mengocok ulang deck prefab...");
+            InitializeShuffleDeck();
+        }
+
+        int randomIndex = lockedSpawnIndices[currentListIndex];
+        
+        // Cek apakah slot element di inspector ada yang kosong / Missing
+        if (garbagePrefabs[randomIndex] == null)
+        {
+            Debug.LogError($"<color=red>[Gameplay Spawner Error]</color> Slot Element ke-{randomIndex} di Inspector KOSONG atau Missing Prefab!");
+            currentListIndex++;
+            return;
+        }
+
+        // LOG 2: Mengetahui nama prefab fisik asli yang lahir ke hirarki
+        Debug.Log($"<color=white>[Spawning Physically]</color> Memunculkan objek ke-{currentListIndex + 1}/{lockedSpawnIndices.Count}. Nama Prefab asli: <color=cyan>{garbagePrefabs[randomIndex].name}</color>");
+
+        currentListIndex++;
+        
+        Vector2 spawnPos = new Vector2(Random.Range(spawnRangeX.x, spawnRangeX.y), Random.Range(spawnRangeY.x, spawnRangeY.y));
+        
+        GameObject go = Instantiate(garbagePrefabs[randomIndex], spawnPos, Quaternion.identity);
+
+        Vector3 smallTargetScale = new Vector3(0.4f, 0.4f, 1f); 
+        StartCoroutine(ScaleUp(go, smallTargetScale));
+
+        Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            Vector2 randomForce = new Vector2(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+            rb.AddForce(randomForce, ForceMode2D.Impulse);
+        }
+    }
+
+    IEnumerator ScaleUp(GameObject target, Vector3 targetScale)
+    {
+        if (target == null) yield break;
+
+        target.transform.localScale = Vector3.zero; 
+        float timer = 0f;
+        float duration = 0.2f;
+        
+        while (timer < duration)
+        {
+            if (target == null) yield break; 
+
+            timer += Time.deltaTime;
+            target.transform.localScale = Vector3.Lerp(Vector3.zero, targetScale, timer / duration);
+            
+            yield return null;
+        }
+
+        if (target != null)
+        {
+            target.transform.localScale = targetScale;
+        }
+    }
+}
+
+
+
+
+======= Fitur Peningkatan Level dan Pergantian UI ========
+// GamePlay
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
+
+public class GamePlay: MonoBehaviour
+{
+    public static GamePlay Instance;
+    [Header("Ui Components")]
+    public Image backgroundGameplay;
+    public TextMeshProUGUI minuteText;
+    public TextMeshProUGUI secondText;
+
+    [Header("Trash Bin")]
+    public Image tbOrganik;
+    public Image tbAnOrganik;
+    public Image tbB3;
+
+    [Header("Progress Bars")]
+    public Slider barTbOrganik;
+    public Slider barTbAnOrganik;
+    public Slider barTbB3;
+
+
+    [Header("Text Mash Pro Bar")]
+    public TMP_Text txtTbBarOrganik;
+    public TMP_Text txtTbBarAnOrganik;
+    public TMP_Text txtTbBarB3;
+
+    [HideInInspector] public float gameElapsedTime = 0f;
+
+    void Awake()
+    {
+        // Inisialisasi Singleton
+        if (Instance == null) { Instance = this; }
+    }
+    void Update()
+    {
+        gameElapsedTime += Time.deltaTime;
+
+        int menit = Mathf.FloorToInt(gameElapsedTime / 60f); 
+        int detik = Mathf.FloorToInt(gameElapsedTime % 60f);
+
+
+        if (secondText != null)
+        {
+            secondText.text = detik.ToString();
+        }
+
+        if (minuteText != null)
+        {
+            minuteText.text = menit.ToString() + " Min";
+        }
+    }
+
+    public void HandleChangeScene(string nameScene)
+    {
+        Debug.Log("Tombol diklik! Mencoba berpindah ke scene: " + nameScene);
+        
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nameScene);
+    }
+
+
+    public void SetDifficultyColor(int difficultyLevel)
+    {
+        Color targetColor = Color.white;
+
+        switch (difficultyLevel)
+        {
+            case 0:
+                targetColor = Color.white;
+                break;
+
+            case 1:
+                targetColor = Color.yellow;
+                break;
+
+            case 2:
+                targetColor = new Color(1f, 0.5f, 0f); // Orange
+                break;
+
+            default:
+                targetColor = Color.red;
+                break;
+        }
+
+        minuteText.color = targetColor;
+        secondText.color = targetColor;
+    }
+
+}
+
+
+
+// GarbageSpawner
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class GarbageSpawner : MonoBehaviour
+{
+    public GameObject[] garbagePrefabs; 
+    public float spawnInterval = 1f;   
+    public Vector2 spawnRangeX = new Vector2(-7f, 7f);
+    public Vector2 spawnRangeY = new Vector2(-4f, 4f);
+
+
+    [Header("Base Settings (Awal Game)")]
+    [Tooltip("Jeda waktu awal antar spawn (detik)")]
+    public float baseSpawnInterval = 2f;   
+    [Tooltip("Jumlah minimal sampah di awal game")]
+    public int baseMinSpawn = 1;
+    [Tooltip("Jumlah maksimal sampah di awal game")]
+    public int baseMaxSpawn = 2; 
+
+    [Header("Difficulty Progression (Tingkat Kesulitan)")]
+    [Tooltip("Setiap berapa detik kesulitan akan naik? (60 = 1 menit)")]
+    public float difficultyInterval = 60f;
+    [Tooltip("Pengurangan jeda waktu setiap tingkat kesulitan naik")]
+    public float intervalDecrease = 0.25f;
+    [Tooltip("Batas paling cepat jeda spawn (detik)")]
+    public float minAllowedInterval = 0.4f;
+    [Tooltip("Penambahan jumlah maksimal sampah yang keluar setiap kesulitan naik")]
+    public int maxSpawnIncrease = 1;
+    [Tooltip("Batas paling banyak sampah yang boleh keluar sekaligus")]
+    public int absoluteMaxSpawn = 6;
+
+    // Variabel dinamis internal
+    private float currentSpawnInterval;
+    private int currentMinSpawn;
+    private int currentMaxSpawn;
+    private int lastDifficultyLevel = 0;
+
+
+    private List<int> lockedSpawnIndices = new List<int>();
+    private int currentListIndex = 0;
+
+    void Start()
+    {
+        currentSpawnInterval = baseSpawnInterval;
+        currentMinSpawn = baseMinSpawn;
+        currentMaxSpawn = baseMaxSpawn;
+
+
+        InitializeShuffleDeck();
+        StartCoroutine(SpawnRoutine());
+    }
+
+    void Update()
+    {
+        if (GamePlay.Instance != null)
+        {
+            float totalWaktuGame = GamePlay.Instance.gameElapsedTime;
+
+            int currentDifficultyLevel = Mathf.FloorToInt(totalWaktuGame / difficultyInterval);
+
+            if (currentDifficultyLevel > lastDifficultyLevel)
+            {
+                IncreaseDifficulty();
+                lastDifficultyLevel = currentDifficultyLevel;
+            }
+        }
+    }
+
+    void IncreaseDifficulty()
+    {
+        if (currentSpawnInterval > minAllowedInterval)
+        {
+            currentSpawnInterval -= intervalDecrease;
+            if (currentSpawnInterval < minAllowedInterval) currentSpawnInterval = minAllowedInterval;
+            Debug.Log($"[SPAWNER] Kecepatan naik mengikuti timer GamePlay! Jeda sekarang: {currentSpawnInterval} detik.");
+        }
+
+        if (currentMaxSpawn < absoluteMaxSpawn)
+        {
+            currentMaxSpawn += maxSpawnIncrease;
+            
+            if (currentMaxSpawn >= 4) currentMinSpawn += 1; 
+            
+            Debug.Log($"[SPAWNER] Jumlah naik mengikuti timer GamePlay! Sekali spawn keluar: {currentMinSpawn} - {currentMaxSpawn} sampah.");
+        }
+    }
+
+    IEnumerator SpawnRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(currentSpawnInterval);
+
+            if (garbagePrefabs.Length == 0) continue;
+
+            int totalToSpawn = Random.Range(currentMinSpawn, currentMaxSpawn + 1);
+
+            for (int i = 0; i < totalToSpawn; i++)
+            {
+                SpawnSingleGarbage();
+            }
+        }
+    }
+
+    void InitializeShuffleDeck()
+    {
+        if (garbagePrefabs.Length == 0) return;
+
+        lockedSpawnIndices.Clear();
+        for (int i = 0; i < garbagePrefabs.Length; i++)
+        {
+            lockedSpawnIndices.Add(i);
+        }
+
+        for (int i = lockedSpawnIndices.Count - 1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            int temp = lockedSpawnIndices[i];
+            lockedSpawnIndices[i] = lockedSpawnIndices[rnd];
+            lockedSpawnIndices[rnd] = temp;
+        }
+
+        currentListIndex = 0;
+    }
+
+    void SpawnSingleGarbage()
+    {
+        if (currentListIndex >= lockedSpawnIndices.Count)
+        {
+            InitializeShuffleDeck();
+        }
+
+        int randomIndex = lockedSpawnIndices[currentListIndex];
+        currentListIndex++;
+        
+        if (garbagePrefabs[randomIndex] == null) return;
+        
+        Vector2 spawnPos = new Vector2(Random.Range(spawnRangeX.x, spawnRangeX.y), Random.Range(spawnRangeY.x, spawnRangeY.y));
+        
+        GameObject go = Instantiate(garbagePrefabs[randomIndex], spawnPos, Quaternion.identity);
+
+        Vector3 smallTargetScale = new Vector3(0.4f, 0.4f, 1f); 
+        StartCoroutine(ScaleUp(go, smallTargetScale));
+
+        Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            Vector2 randomForce = new Vector2(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+            rb.AddForce(randomForce, ForceMode2D.Impulse);
+        }
+
+        float destroyDelay = currentSpawnInterval * 2.5f;
+
+        if (destroyDelay < 1.5f) 
+        {
+            destroyDelay = 1.5f;
+        }
+
+        GarbageVisual visualScript = go.GetComponent<GarbageVisual>();
+        
+        if (visualScript != null)
+        {
+            visualScript.StartLifetimeCountdown(destroyDelay);
+        }
+        else
+        {
+            Destroy(go, destroyDelay);
+        }
+    }
+
+    IEnumerator ScaleUp(GameObject target, Vector3 targetScale)
+    {
+        if (target == null) yield break;
+
+        target.transform.localScale = Vector3.zero; 
+        float timer = 0f;
+        float duration = 0.2f;
         
         while (timer < duration)
         {

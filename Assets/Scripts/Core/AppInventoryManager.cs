@@ -28,6 +28,16 @@ public class AppInventoryManager: MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             LoadInventory();
+
+            // ================= BARIS LOG TAMBAHAN KAMU =================
+            if (garbageMasterData != null)
+            {
+                Debug.Log($"<color=lime>[Master Data Load]</color> Sukses memuat <color=yellow>{garbageMasterData.Count}</color> jenis data sampah dari Master Data.");
+            }
+            else
+            {
+                Debug.LogError("<color=red>[Master Data Error]</color> List garbageMasterData bernilai NULL di Inventory Manager!");
+            }
         } 
         else
         {

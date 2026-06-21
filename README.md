@@ -88,25 +88,26 @@ Assets/
 - [x] **Fix - Pemulihan Waktu Transisi Scene:** Menambahkan `Time.timeScale = 1f` pada fungsi `HandleChangeScene` di `GamePlay.cs` untuk mencegah scene MainMenu tersangkut di layar hijau akibat waktu global yang membeku.
 - [x] **Fix - Dynamic Score & Recap System (Game Over):** Mengintegrasikan fungsi pengekstrakan data riwayat `CalculateLevelSummary` menggunakan parameter `out` untuk menyuplai data jumlah sampah organik, anorganik, B3, grand total, skor, dan koin reward ke `Panel_GameOver` secara dinamis.
 - [x] **Alur Multi-Equip Toko Terintegrasi:** Penyelesaian fungsi `EquipBin` dan `CheckIfEquipped` berbasis kategori (Organic, Inorganic, B3) di dalam `AppInventoryManager` dengan sinkronisasi ID Baru (`ov1`, `aov1`, `b3v1`) yang terhubung langsung ke penyimpanan data lokal.
+- [x] **Sistem Audio Global Terintegrasi:** Implementasi `GameAudioManager` terpusat dari scene `AppLoading` menggunakan `AudioEvent` dan `AudioMixer` untuk mengatur transisi otomatis musik latar (_BGM_) antara Main Menu dan Gameplay.
+- [x] **Kurva Kesulitan Gameplay Dinamis:** Penerapan alur game dengan tingkat kesulitan yang otomatis meningkat seiring berjalannya gameplay (kecepatan _spawn_ sampah atau variasi tipe sampah yang muncul).
 
 ---
 
 ## 4. Rencana Selanjutnya (Next Steps)
 
-### 📌 Agenda Utama: Penyelesaian & Integrasi Sistem Upgrade Tong Sampah
+### 📌 Agenda Utama: Perbaikan Bug (_Shop_ & _UI Setting_) & Fitur Pengacakan Estetik
 
-- [ ] **Setup Akhir Prefab Kartu UI (`TrashBinCard`):**
-  - Menyambungkan komponen UI references (`Image`, `TextMeshPro`, `Slider`, `Button`) dari hierarki objek `Item_Trashbin` ke dalam slot skrip komponen `TrashBinCard`.
-  - Mengubah objek `Item_Trashbin` menjadi Prefab utuh di folder Project bawah dan membersihkan area `Content` di Scroll View agar kosong secara default saat inisialisasi awal.
+- [ ] **Fix - Bug Pembelian Item Shop V2:**
+  - Menyelidiki kegagalan transaksi item tingkat lanjut (ID `v2`) di `AppInventoryManager` yang tidak bisa dibeli meskipun saldo koin pemain mencukupi.
+  - Memastikan logika pengecekan harga, validasi ID, dan fungsi penguncian item di local data/JSON berjalan normal untuk item selain versi `v1`.
 
-- [ ] **Sinkronisasi Otak Manager Panel (`UpgradeTrashBinManager`):**
-  - Memastikan slot `Upgrade Card Prefab` dan `Content Container` pada objek `App_Manager` terhubung dengan benar di Inspector Unity.
-  - Melakukan debugging pemanggilan fungsi `RenderUpgradeList()` saat panel dibuka (`OnEnable`) untuk memvalidasi kelahiran kartu secara dinamis berdasarkan isi dari `playerInventory`.
+- [ ] **Fix - Gangguan Visual Toggle UI Setting:**
+  - Memperbaiki komponen _UI Toggle_ (`Btn_Music`, `Btn_Sound`, `Btn_Vibrate`) di mana gambar ikon _Checkmark_ (Ikon ON/bersih) tidak muncul kembali atau hilang secara visual saat status tombol diubah ke posisi _OFF_.
+  - Sinkronisasi ulang referensi komponen _Target Graphic_ dan _Graphic_ di Inspector, serta menyesuaikan hierarki bingkai tombol agar ikon tidak tersembunyi secara salah.
 
-- [ ] **Pengujian Validasi Transaksi & Refresh UI:**
-  - Melakukan uji coba klik tombol upgrade (`TriggerUpgradeProcess`) untuk memastikan koin berkurang secara presisi menggunakan fungsi `SpendCoins` pusat.
-  - Memastikan tingkat level (`currentLevel`) tersimpan aman ke dalam data JSON melalui fungsi `UpgradeOwnedBin` setelah transaksi berhasil.
-  - Memvalidasi efek _real-time refresh_ pada slider level dan teks kapasitas penampungan di layar UI sesaat setelah tombol ditekan tanpa perlu menutup/membuka ulang panel.
+- [ ] **Pengembangan Fitur Pengacakan Background (_Randomized Environmental Background_):**
+  - Membuat skrip _Manager_ atau menambahkan fungsi di `GamePlay.cs` untuk memilih satu dari beberapa aset sprite latar belakang secara acak sesaat sebelum scene gameplay dimulai.
+  - Mengonfigurasi optimalisasi _Import Settings_ gambar latar belakang (`Max Size 2048`, `Full Rect`, kompresi `ASTC 4x4`) agar pemandangan di game _EcoSort_ bervariasi namun tetap hemat memori RAM HP.
 
 ---
 

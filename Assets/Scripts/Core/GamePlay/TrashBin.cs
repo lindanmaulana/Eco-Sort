@@ -4,11 +4,8 @@ using TMPro;
 
 public class TrashBin : MonoBehaviour
 {
-    // Ini untuk menentukan tong ini jenis apa (Organik/Anorganik/B3)
-    // Nilainya akan diisi otomatis oleh AppGameManager saat game mulai
     [Header("Manager References")]
     public AppGameManager gameManager;
-
     public TrashBinData binData;
     public int currentLevel = 1;
     public EcoGarbageCategory binType; 
@@ -18,7 +15,6 @@ public class TrashBin : MonoBehaviour
     public TextMeshProUGUI capacityText;
     private float currentAmount = 0f;
     private float calculatedMaxCapacity;
-
 
     public void Start()
     {
@@ -48,55 +44,39 @@ public class TrashBin : MonoBehaviour
                 if (currentAmount >= calculatedMaxCapacity)
                 {
                     Debug.LogWarning($"Tong {binType} sudah PENUH! {data.garbageName} tidak bisa masuk.");
-                    
                     Destroy(other.gameObject); 
                     return;
                 }
 
+                dragScript.PlayFeedbackSFX(true);
                 AddProgress(1f);
 
                 if (gameManager != null)
                 {
                     gameManager.RecordGarbageEntry(data);
-                    gameManager.CheckWinCondition();
+                    // PERUBAHAN: Baris CheckWinCondition() di sini telah dihapus
                 }
 
                 Destroy(other.gameObject);
             }
             else
             {
-                // Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
-
-                // if (other.TryGetComponent<WasteDraggable>(out WasteDraggable drag)) drag.enabled = false;
-                // if (other.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
-                
-                // Destroy(other.gameObject);
-
-                // if(gameManager != null)
-                // {
-                //     gameManager.RecordWrongEntry(data);
-                // }
-
                 Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
+                dragScript.PlayFeedbackSFX(false);
 
-                // 1. Matikan fungsi drag agar player dipaksa "melepas" sampah secara sistem
                 if (other.TryGetComponent<WasteDraggable>(out WasteDraggable drag)) 
                 {
                     drag.enabled = false;
                 }
 
-                // 2. Matikan Collider dan Sprite Renderer-nya agar tidak terlihat & tidak bisa diinteraksi
                 if (other.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
                 if (other.TryGetComponent<SpriteRenderer>(out SpriteRenderer sprite)) sprite.enabled = false;
 
-                // 3. Jalankan logika pengurangan darah & trigger panel Game Over
                 if(gameManager != null)
                 {
                     gameManager.RecordWrongEntry(data);
                 }
 
-                // 4. FIX MUTLAK: Hancurkan objek secara aman TANPA DELAY waktu, 
-                // tapi biarkan Unity menyelesaikannya di akhir siklus frame ini.
                 Destroy(other.gameObject);
             }
         }
@@ -109,6 +89,7 @@ public class TrashBin : MonoBehaviour
 
         UpdateUI();
     }
+
     void UpdateUI()
     {
         if (capacityBar)
@@ -143,7 +124,7 @@ public class TrashBin : MonoBehaviour
                     activeBinID = AppInventoryManager.instance.userEquippedAnorganic;
                     break;
                 case EcoGarbageCategory.B3:
-                    activeBinID = AppInventoryManager.instance.userEequippedB3;
+                    activeBinID = AppInventoryManager.instance.userEquippedB3;
                     break;
             }
 
@@ -157,7 +138,8 @@ public class TrashBin : MonoBehaviour
             {
                 currentLevel = 1;
             }
-        } else
+        } 
+        else
         {
             Debug.LogWarning("AppInventoryManager tidak ditemukan! Menggunakan data fallback di Inspector.");
         }

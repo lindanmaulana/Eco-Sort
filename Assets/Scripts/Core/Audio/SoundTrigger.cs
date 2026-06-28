@@ -5,16 +5,18 @@ public class SoundTrigger : MonoBehaviour
 {
     [SerializeField] private AudioEvent soundToPlay;
 
-    // Fungsi untuk memicu suara secara manual lewat code lain
     public void TriggerSound()
     {
+        bool isSFXOn = PlayerPrefs.GetInt(DataKeyPlayerPrefs.SETTING_SOUND_BACKGROUND, 1) == 1;
+
+        if (!isSFXOn) return;
+
         if (AudioManager.instance != null)
         {
             AudioManager.instance.PlaySFX(soundToPlay);
         }
     }
 
-    // OTOMATIS: Jika ditempel di Tombol UI, langsung nge-hook fungsi kliknya
     void Start()
     {
         Button btn = GetComponent<Button>();
@@ -24,7 +26,17 @@ public class SoundTrigger : MonoBehaviour
         }
     }
 
-    // OTOMATIS: Jika ditempel di Koin (Trigger 2D)
+    private void OnEnable()
+    {
+        Button btn = GetComponent<Button>();
+        Collider2D col = GetComponent<Collider2D>();
+        
+        if (btn == null && col == null)
+        {
+            TriggerSound();
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))

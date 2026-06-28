@@ -1457,6 +1457,7 @@ GameObject:
   - component: {fileID: 1017572456}
   - component: {fileID: 1017572455}
   - component: {fileID: 1017572459}
+  - component: {fileID: 1017572460}
   m_Layer: 5
   m_Name: Btn_Setting
   m_TagString: Untagged
@@ -1612,6 +1613,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimateButton
   scaleFactor: 0.9
   speed: 15
+--- !u!114 &1017572460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1017572453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59535db8124a8a14ea7d971cf828c833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundTrigger
+  soundToPlay: {fileID: 11400000, guid: 17782c803b41989449936cb8985f49fc, type: 2}
 --- !u!1 &1027503423
 GameObject:
   m_ObjectHideFlags: 0
@@ -1780,6 +1794,7 @@ GameObject:
   - component: {fileID: 1054917302}
   - component: {fileID: 1054917305}
   - component: {fileID: 1054917306}
+  - component: {fileID: 1054917307}
   m_Layer: 5
   m_Name: Btn_Shop
   m_TagString: Untagged
@@ -1935,6 +1950,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimateButton
   scaleFactor: 0.9
   speed: 15
+--- !u!114 &1054917307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054917300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59535db8124a8a14ea7d971cf828c833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundTrigger
+  soundToPlay: {fileID: 11400000, guid: 17782c803b41989449936cb8985f49fc, type: 2}
 --- !u!1 &1108702764
 GameObject:
   m_ObjectHideFlags: 0
@@ -2565,6 +2593,7 @@ GameObject:
   - component: {fileID: 1509004543}
   - component: {fileID: 1509004546}
   - component: {fileID: 1509004547}
+  - component: {fileID: 1509004548}
   m_Layer: 5
   m_Name: Btn_Inventory
   m_TagString: Untagged
@@ -2720,6 +2749,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimateButton
   scaleFactor: 0.9
   speed: 15
+--- !u!114 &1509004548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1509004541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59535db8124a8a14ea7d971cf828c833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundTrigger
+  soundToPlay: {fileID: 11400000, guid: 17782c803b41989449936cb8985f49fc, type: 2}
 --- !u!1 &1531965463
 GameObject:
   m_ObjectHideFlags: 0

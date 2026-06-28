@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5718715184593742525}
   - component: {fileID: 7891187672953095674}
   - component: {fileID: 4508894496580208778}
+  - component: {fileID: 8245531215746734788}
   m_Layer: 5
   m_Name: Txt_Amount
   m_TagString: Untagged
@@ -33,10 +34,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 201325354389506164}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 18, y: -5}
+  m_SizeDelta: {x: 35.59, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5718715184593742525
 CanvasRenderer:
@@ -158,6 +159,20 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8245531215746734788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013865500795752368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &2696558157780993675
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,8 +449,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 120
-  m_PreferredHeight: 50
+  m_PreferredWidth: 160
+  m_PreferredHeight: 60
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -456,7 +471,7 @@ MonoBehaviour:
     m_Right: 5
     m_Top: 5
     m_Bottom: 5
-  m_ChildAlignment: 3
+  m_ChildAlignment: 4
   m_Spacing: 10
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
@@ -705,6 +720,8 @@ MonoBehaviour:
   txtHargaAtauStatus: {fileID: 7891187672953095674}
   imgCoinIcon: {fileID: 7820139728277693507}
   btnAksi: {fileID: 7052595367925228897}
+  soundClickSuccess: {fileID: 11400000, guid: 1421fec2c6bd1ae4b93695503242ef1a, type: 2}
+  soundClickFailed: {fileID: 11400000, guid: 75f0d13060b5cad4a876bc278eb4404f, type: 2}
 --- !u!1 &7132481130126253077
 GameObject:
   m_ObjectHideFlags: 0

@@ -2113,6 +2113,7 @@ GameObject:
   - component: {fileID: 1978006767}
   - component: {fileID: 1978006766}
   - component: {fileID: 1978006765}
+  - component: {fileID: 1978006769}
   m_Layer: 5
   m_Name: Btn_Close
   m_TagString: Untagged
@@ -2254,6 +2255,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978006763}
   m_CullTransparentMesh: 1
+--- !u!114 &1978006769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1978006763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59535db8124a8a14ea7d971cf828c833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundTrigger
+  soundToPlay: {fileID: 11400000, guid: 17782c803b41989449936cb8985f49fc, type: 2}
 --- !u!1 &2007535534
 GameObject:
   m_ObjectHideFlags: 0

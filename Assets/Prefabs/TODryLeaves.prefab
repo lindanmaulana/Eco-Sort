@@ -195,3 +195,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WasteDraggable
   wasDraggedByPlayer: 0
   constantSpeed: 1.5
+  correctSortSFX: {fileID: 11400000, guid: 68bdf0e9118da8c4293a6ace776add93, type: 2}
+  wrongSortSFX: {fileID: 11400000, guid: 98437defe4a291a41b733ff72237aa6f, type: 2}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikChickenBon
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikChickenBon
+  garbageName: Tulang Ayam
   garbageIcon: {fileID: -6855263945806237146, guid: f326800d64ed7dc41ba475197efd7ca9, type: 3}
   type: 0
   scorePoint: 15

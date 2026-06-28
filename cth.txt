@@ -1,0 +1,1311 @@
+GarbageSpawner
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+
+public class GarbageSpawner : MonoBehaviour
+{
+    public GameObject[] garbagePrefabs; 
+    public float spawnInterval = 1f;   
+    public Vector2 spawnRangeX = new Vector2(-7f, 7f);
+    public Vector2 spawnRangeY = new Vector2(-4f, 4f);
+
+
+    [Header("Base Settings (Awal Game)")]
+    [Tooltip("Jeda waktu awal antar spawn (detik)")]
+    public float baseSpawnInterval = 2f;   
+    [Tooltip("Jumlah minimal sampah di awal game")]
+    public int baseMinSpawn = 1;
+    [Tooltip("Jumlah maksimal sampah di awal game")]
+    public int baseMaxSpawn = 2; 
+
+    [Header("Difficulty Progression (Tingkat Kesulitan)")]
+    [Tooltip("Setiap berapa detik kesulitan akan naik? (60 = 1 menit)")]
+    public float difficultyInterval = 60f;
+    [Tooltip("Pengurangan jeda waktu setiap tingkat kesulitan naik")]
+    public float intervalDecrease = 0.25f;
+    [Tooltip("Batas paling cepat jeda spawn (detik)")]
+    public float minAllowedInterval = 0.4f;
+    [Tooltip("Penambahan jumlah maksimal sampah yang keluar setiap kesulitan naik")]
+    public int maxSpawnIncrease = 1;
+    [Tooltip("Batas paling banyak sampah yang boleh keluar sekaligus")]
+    public int absoluteMaxSpawn = 6;
+
+    // Variabel dinamis internal
+    private float currentSpawnInterval;
+    private int currentMinSpawn;
+    private int currentMaxSpawn;
+    private int lastDifficultyLevel = 0;
+
+
+    private List<int> lockedSpawnIndices = new List<int>();
+    private int currentListIndex = 0;
+
+    private Coroutine notificationCoroutine;
+    private Coroutine lightningCoroutine;
+
+    void Start()
+    {
+        currentSpawnInterval = baseSpawnInterval;
+        currentMinSpawn = baseMinSpawn;
+        currentMaxSpawn = baseMaxSpawn;
+
+
+        InitializeShuffleDeck();
+        StartCoroutine(SpawnRoutine());
+    }
+
+    void Update()
+    {
+        if (GamePlay.Instance != null)
+        {
+            float totalWaktuGame = GamePlay.Instance.gameElapsedTime;
+
+            int currentDifficultyLevel = Mathf.FloorToInt(totalWaktuGame / difficultyInterval);
+
+            if (currentDifficultyLevel > lastDifficultyLevel)
+            {
+                lastDifficultyLevel = currentDifficultyLevel;
+                IncreaseDifficulty(currentDifficultyLevel);
+            }
+        }
+    }
+
+    void IncreaseDifficulty(int newLevel)
+    {
+        if (currentSpawnInterval > minAllowedInterval)
+        {
+            currentSpawnInterval -= intervalDecrease;
+            if (currentSpawnInterval < minAllowedInterval) currentSpawnInterval = minAllowedInterval;
+            Debug.Log($"[SPAWNER] Kecepatan naik! Jeda sekarang: {currentSpawnInterval} detik.");
+        }
+
+        if (currentMaxSpawn < absoluteMaxSpawn)
+        {
+            currentMaxSpawn += maxSpawnIncrease;
+            if (currentMaxSpawn >= 4) currentMinSpawn += 1; 
+            Debug.Log($"[SPAWNER] Jumlah naik! Sekali spawn: {currentMinSpawn} - {currentMaxSpawn} sampah.");
+        }
+
+        if (GamePlay.Instance != null)
+        {
+            GamePlay.Instance.SetDifficultyVisuals(newLevel);
+        }
+    }
+
+    IEnumerator SpawnRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(currentSpawnInterval);
+
+            if (garbagePrefabs.Length == 0) continue;
+
+            int totalToSpawn = Random.Range(currentMinSpawn, currentMaxSpawn + 1);
+
+            for (int i = 0; i < totalToSpawn; i++)
+            {
+                SpawnSingleGarbage();
+            }
+        }
+    }
+
+    void InitializeShuffleDeck()
+    {
+        if (garbagePrefabs.Length == 0) return;
+
+        lockedSpawnIndices.Clear();
+        for (int i = 0; i < garbagePrefabs.Length; i++)
+        {
+            lockedSpawnIndices.Add(i);
+        }
+
+        for (int i = lockedSpawnIndices.Count - 1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            int temp = lockedSpawnIndices[i];
+            lockedSpawnIndices[i] = lockedSpawnIndices[rnd];
+            lockedSpawnIndices[rnd] = temp;
+        }
+
+        currentListIndex = 0;
+    }
+
+    void SpawnSingleGarbage()
+    {
+        if (currentListIndex >= lockedSpawnIndices.Count)
+        {
+            InitializeShuffleDeck();
+        }
+
+        int randomIndex = lockedSpawnIndices[currentListIndex];
+        currentListIndex++;
+        
+        if (garbagePrefabs[randomIndex] == null) return;
+        
+        Vector2 spawnPos = new Vector2(Random.Range(spawnRangeX.x, spawnRangeX.y), Random.Range(spawnRangeY.x, spawnRangeY.y));
+        
+        GameObject go = Instantiate(garbagePrefabs[randomIndex], spawnPos, Quaternion.identity);
+
+        Vector3 smallTargetScale = new Vector3(0.4f, 0.4f, 1f); 
+        StartCoroutine(ScaleUp(go, smallTargetScale));
+
+        Rigidbody2D rb = go.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            Vector2 randomForce = new Vector2(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+            rb.AddForce(randomForce, ForceMode2D.Impulse);
+        }
+
+        float destroyDelay = currentSpawnInterval * 2.5f;
+
+        if (destroyDelay < 1.5f) 
+        {
+            destroyDelay = 1.5f;
+        }
+
+        GarbageVisual visualScript = go.GetComponent<GarbageVisual>();
+        
+        if (visualScript != null)
+        {
+            visualScript.StartLifetimeCountdown(destroyDelay);
+        }
+        else
+        {
+            Destroy(go, destroyDelay);
+        }
+    }
+
+    IEnumerator ScaleUp(GameObject target, Vector3 targetScale)
+    {
+        if (target == null) yield break;
+
+        target.transform.localScale = Vector3.zero; 
+        float timer = 0f;
+        float duration = 0.2f;
+        
+        while (timer < duration)
+        {
+            if (target == null) yield break; 
+
+            timer += Time.deltaTime;
+            target.transform.localScale = Vector3.Lerp(Vector3.zero, targetScale, timer / duration);
+            
+            yield return null;
+        }
+
+        if (target != null)
+        {
+            target.transform.localScale = targetScale;
+        }
+    }
+}
+
+
+
+GamePlay
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
+public class GamePlay: MonoBehaviour
+{
+    public static GamePlay Instance;
+    [Header("Ui Components")]
+    public Image backgroundGameplay;
+    public TextMeshProUGUI minuteText;
+    public TextMeshProUGUI secondText;
+
+    [Header("Trash Bin")]
+    public Image tbOrganik;
+    public Image tbAnOrganik;
+    public Image tbB3;
+
+    [Header("Progress Bars")]
+    public Slider barTbOrganik;
+    public Slider barTbAnOrganik;
+    public Slider barTbB3;
+
+
+    [Header("Text Mash Pro Bar")]
+    public TMP_Text txtTbBarOrganik;
+    public TMP_Text txtTbBarAnOrganik;
+    public TMP_Text txtTbBarB3;
+
+    [HideInInspector] public float gameElapsedTime = 0f;
+
+    // Tracker Coroutine untuk animasi bounce agar tidak bertabrakan
+    private Coroutine bounceCoroutine;
+    private Transform timerParentTransform;
+
+    void Awake()
+    {
+        // Inisialisasi Singleton
+        if (Instance == null) { Instance = this; }
+    }
+
+    void Start()
+    {
+        if (minuteText != null) timerParentTransform = minuteText.transform.parent;
+    }
+
+    void Update()
+    {
+        gameElapsedTime += Time.deltaTime;
+
+        int menit = Mathf.FloorToInt(gameElapsedTime / 60f); 
+        int detik = Mathf.FloorToInt(gameElapsedTime % 60f);
+
+
+        if (secondText != null)
+        {
+            secondText.text = detik.ToString("00");
+        }
+
+        if (minuteText != null)
+        {
+            minuteText.text = menit.ToString() + " Min";
+        }
+    }
+
+    public void SetDifficultyVisuals(int difficultyLevel)
+    {
+        Color targetColor = Color.white;
+
+        switch (difficultyLevel)
+        {
+            case 0:
+                targetColor = Color.white;
+                break;
+            case 1:
+                targetColor = Color.yellow;
+                break;
+            case 2:
+                targetColor = new Color(1f, 0.5f, 0f); // Orange
+                break;
+            default:
+                targetColor = Color.red;
+                break;
+        }
+
+        if (minuteText != null) minuteText.color = targetColor;
+        if (secondText != null) secondText.color = targetColor;
+
+        // Picu animasi bounce pada UI Timer
+        if (bounceCoroutine != null) StopCoroutine(bounceCoroutine);
+        bounceCoroutine = StartCoroutine(BounceTimerRoutine());
+    }
+
+    IEnumerator BounceTimerRoutine()
+    {
+        Transform targetTransform = (timerParentTransform != null) ? timerParentTransform : minuteText.transform;
+        
+        if (targetTransform == null) yield break;
+
+        Vector3 originalScale = Vector3.one;
+        Vector3 targetScale = new Vector3(1.3f, 1.3f, 1.3f);
+        
+        float duration = 0.25f;
+        float elapsed = 0f;
+
+        while (elapsed < duration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            targetTransform.localScale = Vector3.Lerp(originalScale, targetScale, elapsed / (duration / 2f));
+            yield return null;
+        }
+
+        elapsed = 0f;
+
+        while (elapsed < duration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            targetTransform.localScale = Vector3.Lerp(targetScale, originalScale, elapsed / (duration / 2f));
+            yield return null;
+        }
+
+        targetTransform.localScale = originalScale;
+    }
+
+    public void HandleChangeScene(string nameScene)
+    {
+        Debug.Log("Tombol diklik! Mencoba berpindah ke scene: " + nameScene);
+        
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nameScene);
+    }
+
+}
+
+
+
+AppGameManager
+using UnityEngine;
+using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
+
+public class AppGameManager: MonoBehaviour
+{
+    public static AppGameManager instance;
+
+    [Header("Titik Lokasi Tong")]
+    public Transform posOrganic;
+    public Transform posInorganic;
+    public Transform posB3;
+
+    [Header("Master Prefab")]
+    public GameObject baseBinPrefab; 
+
+    [Header("Data Yang Dipakai (Equipped)")]
+    private TrashBinData currentOrganicData;
+    private TrashBinData currentInorganicData;
+    private TrashBinData currentB3Data;
+
+
+    [Header("Statistik Sementara Level Ini")]
+    public int coins;
+    public int currentScoreLevel;
+    public List<GarbageData> garbageHistory = new List<GarbageData>();
+
+
+    [Header("Sistem Nyawa")]
+    public AppHeartsUI HeartsUI;
+    public int maxHearts = 300;      
+    public int currentHearts;      
+    public bool isGameOver = false;
+
+
+    [Header("Game Economy Settings")]
+    [Tooltip("Persentase skor yang diubah jadi koin. Contoh: 0.5f berarti koin adalah 50% dari skor.")]
+    [SerializeField] private float coinConversionRate = 0.5f;
+    public static event Action<int, int> OnGameplayDataChanged;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        } else
+        {
+            Destroy(gameObject);
+        }
+    }
+    void Start()
+    {        
+        currentHearts = maxHearts;
+        if (HeartsUI != null)
+        {
+            HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);
+        }
+
+        coins = 0;
+        currentScoreLevel = 0;
+
+        LoadAndSpawn();
+    }
+
+    void LoadAndSpawn()
+    {        
+        string organicName = PlayerPrefs.GetString("User_Equipped_Organic", "so");
+        string inorganicName = PlayerPrefs.GetString("User_Equipped_Anorganic", "sao");
+        string b3Name = PlayerPrefs.GetString("User_Equipped_B3", "sb3");
+
+        string organicID = AppInventoryManager.instance.userEquippedOrganic;
+        string inorganicID = AppInventoryManager.instance.userEquippedAnorganic;
+        string b3ID = AppInventoryManager.instance.userEquippedB3;
+
+
+        currentOrganicData = AppInventoryManager.instance.GetDataFromMaster(organicID);
+        currentInorganicData = AppInventoryManager.instance.GetDataFromMaster(inorganicID);
+        currentB3Data = AppInventoryManager.instance.GetDataFromMaster(b3ID);
+        
+        if (currentOrganicData == null || currentInorganicData == null || currentB3Data == null) Debug.LogError("Data Tong tidak ditemukan di Resources/TrashBins!");
+
+        SetupBin(posOrganic, currentOrganicData, EcoGarbageCategory.Organic, organicID);
+        SetupBin(posInorganic, currentInorganicData, EcoGarbageCategory.Inorganic, inorganicID);
+        SetupBin(posB3, currentB3Data, EcoGarbageCategory.B3, b3ID);
+    }
+    void SetupBin(Transform spawnPos, TrashBinData data, EcoGarbageCategory type, string activeBinID)
+    {
+        if(data == null)
+        {
+            Debug.LogError($"[AppGameManager] Gagal setup tong {type} karena data ScriptableObject kosong!");
+            return;
+        }
+
+        if (baseBinPrefab == null)
+        {
+            Debug.LogError("[AppGameManager] Master Bin Prefab belum dimasukkan di Inspector!");
+            return;
+        }
+
+        GameObject bin = Instantiate(baseBinPrefab, spawnPos.position, Quaternion.identity);
+        bin.name = "Tong_" + type;
+        
+        SpriteRenderer sr = bin.GetComponent<SpriteRenderer>();
+        if (sr != null) 
+        {
+            sr.sprite = data.binIcon;
+        }
+        
+        if (bin.TryGetComponent<TrashBin>(out TrashBin binScript))
+        {
+            binScript.binType = type;
+            binScript.binData = data;
+
+            var ownedItem = AppInventoryManager.instance.playerInventory.Find(b => b.binID == activeBinID);
+            binScript.currentLevel = (ownedItem != null) ? ownedItem.currentLevel : 1;
+
+            binScript.InitializeBin();
+        }
+    }
+
+    public void RecordGarbageEntry(GarbageData enteredGarbage)
+    {
+        garbageHistory.Add(enteredGarbage);
+
+        currentScoreLevel += enteredGarbage.scorePoint;
+        int coinGarbage = Mathf.CeilToInt(enteredGarbage.scorePoint * coinConversionRate);
+        coins += coinGarbage;
+        OnGameplayDataChanged?.Invoke(currentScoreLevel, coins);
+
+        Debug.Log("Successfully recorded: " + enteredGarbage.garbageName);
+
+        Debug.Log($"--- RIWAYAT SAMPAH TERBARU (Total: {garbageHistory.Count}) ---");
+        
+        for (int i = 0; i < garbageHistory.Count; i++)
+        {
+            Debug.Log($"[{i + 1}] {garbageHistory[i].garbageName} ({garbageHistory[i].type})");
+        }
+        
+        Debug.Log("------------------------------------------------");
+    }
+
+    public void RecordWrongEntry(GarbageData wrongGarbage)
+    {
+        if (isGameOver) return;
+
+        currentHearts -= wrongGarbage.penaltyPoint;
+        Debug.LogWarning($"[PENALTI] {wrongGarbage.garbageName} salah masuk! " + $"-{wrongGarbage.penaltyPoint} Nyawa. Sisa: {currentHearts}/{maxHearts}"); 
+
+        if (HeartsUI != null)
+        {
+            HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);    
+        }
+
+        if (currentHearts <= 0)
+        {
+            currentHearts = 0;
+            Debug.Log("GAME OVER! Nyawa kamu sudah habis!");
+            TriggerGameOver();
+        }
+    }
+
+    // void TriggerGameOver()
+    // {
+    //     // isGameOver = true;
+    //     // Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+
+    //     // if (panelGameOver != null)
+    //     // {
+    //     //     panelGameOver.SetActive(true); 
+    //     // }
+
+    //     if (isGameOver) return;
+    //     isGameOver = true;
+    //     Debug.LogError("GAME OVER! Nyawa kamu sudah habis!");
+
+    //     // 2. AKTIFKAN PANEL UI VIA MANAGER (Ini ditaruh di atas agar pasti muncul duluan)
+    //     if (AppUIManager.instance != null)
+    //     {
+    //         AppUIManager.instance.ShowGameOver();
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("AppUIManager.instance KOSONG! Pastikan ada objek _UIManager di Scene dan sudah dipasang skrip AppUIManager!");
+    //     }
+
+    //     // 2. Matikan spawner sampah agar tidak lahir yang baru
+    //     GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+    //     if (spawner != null)
+    //     {
+    //         spawner.CancelInvoke("SpawnGarbage"); 
+    //         spawner.enabled = false;              
+    //     }
+    // }
+
+    public void TriggerGameOver()
+    {
+        if (isGameOver) return;
+        isGameOver = true;
+
+        Debug.LogWarning("[GameManager] TriggerGameOver aktif. Memulai pembersihan input...");
+
+        try 
+        {
+            GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+            if (spawner != null)
+            {
+                spawner.CancelInvoke("SpawnGarbage"); 
+                spawner.enabled = false;              
+            }
+        }
+        catch (System.Exception e) { Debug.LogError("Error matikan spawner: " + e.Message); }
+
+        CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
+        try
+        {
+            WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+            foreach (WasteDraggable garbage in remainingGarbagess)
+            {
+                // Matikan collider fisiknya juga agar tidak memakan raycast mouse
+                if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                
+                garbage.enabled = false;
+            }
+        }
+        catch (System.Exception e) { Debug.LogError("Error bersihkan sampah di layar: " + e.Message); }
+
+        if (AppUIManager.instance != null)
+        {
+            Debug.Log("Panel GameOver trigered");
+            AppUIManager.instance.ShowGameOver(organic, inorganic, b3, currentScoreLevel, coins);
+            ClaimReward();
+        }
+        else
+        {
+            Debug.LogError("AppUIManager.instance tidak ditemukan!");
+        }
+    }
+
+
+    public void CheckWinCondition()
+    {
+        if (isGameOver) return;
+
+        TrashBin[] allBins = FindObjectsByType<TrashBin>(FindObjectsInactive.Exclude);
+        bool isAllBinsFull = true;
+
+        foreach (TrashBin bin in allBins)
+        {
+            if (!bin.IsBinFull())
+            {
+                isAllBinsFull = false;
+                break;
+            }
+        }
+
+        if (isAllBinsFull)
+        {
+            isGameOver = true;
+            Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
+            
+            CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
+            try
+            {
+                WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+                foreach (WasteDraggable garbage in remainingGarbagess)
+                {
+                    if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                    Destroy(garbage.gameObject);
+                }
+            }
+            catch (System.Exception e) { Debug.LogError("Error bersihkan sampah saat menang: " + e.Message); }
+
+            if (AppUIManager.instance != null)
+            {
+                AppUIManager.instance.ShowGameWin(organic, inorganic, b3, currentScoreLevel, coins);
+                
+                ClaimReward();
+            }
+        }
+    }
+
+    // public void CheckWinCondition()
+    // {
+    //     if (isGameOver) return;
+
+    //     TrashBin[] allBins = FindObjectsByType<TrashBin>(FindObjectsInactive.Exclude);
+    //     bool isAllBinsFull = true;
+
+    //     foreach (TrashBin bin in allBins)
+    //     {
+    //         if (!bin.IsBinFull())
+    //         {
+    //             isAllBinsFull = false;
+    //             break;
+    //         }
+    //     }
+
+    //     if (isAllBinsFull)
+    //     {
+    //         isGameOver = true;
+    //         Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
+    //         CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+            
+    //         if (AppUIManager.instance != null)
+    //         {
+    //             AppUIManager.instance.ShowGameWin();
+    //         }
+    //     }
+    // }
+
+    // public void CheckWinCondition()
+    // {
+    //     if (isGameOver) return;
+
+    //     TrashBin[] allBins = FindObjectsByType<TrashBin>(FindObjectsInactive.Exclude);
+    //     bool isAllBinsFull = true;
+
+    //     foreach (TrashBin bin in allBins)
+    //     {
+    //         if (!bin.IsBinFull())
+    //         {
+    //             isAllBinsFull = false;
+    //             break;
+    //         }
+    //     }
+
+    //     if (isAllBinsFull)
+    //     {
+    //         isGameOver = true;
+    //         Debug.Log("SELAMAT! Semua tong sudah penuh, kamu menang!");
+            
+    //         CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
+    //         try
+    //         {
+    //             WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+    //             foreach (WasteDraggable garbage in remainingGarbagess)
+    //             {
+    //                 if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+    //                 Destroy(garbage.gameObject);
+    //             }
+    //         }
+    //         catch (System.Exception e) { Debug.LogError("Error bersihkan sampah saat menang: " + e.Message); }
+
+    //         if (AppUIManager.instance != null)
+    //         {
+    //             AppUIManager.instance.ShowGameWin(organic, inorganic, b3, currentScoreLevel, coins);
+                
+    //             ClaimReward();
+    //         }
+    //     }
+    // }
+
+    public void ClaimReward()
+    {
+        if (coins > 0)
+        {
+            if (AppInventoryManager.instance != null)
+            {
+                AppInventoryManager.instance.AddCoins(coins);
+            }
+
+            coins = 0; 
+        }
+    }
+
+    private void CalculateLevelSummary(out int o, out int a, out int b3)
+    {
+        o = 0; a = 0; b3 = 0;
+        foreach (GarbageData garbage in garbageHistory)
+        {
+            if (garbage.type == EcoGarbageCategory.Organic) o++;
+            else if (garbage.type == EcoGarbageCategory.Inorganic) a++;
+            else if (garbage.type == EcoGarbageCategory.B3) b3++;
+        }
+    }
+}
+
+
+AppGameManager
+using UnityEngine;
+using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
+
+public class AppGameManager : MonoBehaviour
+{
+    public static AppGameManager instance;
+
+    [Header("Titik Lokasi Tong")]
+    public Transform posOrganic;
+    public Transform posInorganic;
+    public Transform posB3;
+
+    [Header("Master Prefab")]
+    public GameObject baseBinPrefab; 
+
+    [Header("Data Yang Dipakai (Equipped)")]
+    private TrashBinData currentOrganicData;
+    private TrashBinData currentInorganicData;
+    private TrashBinData currentB3Data;
+
+    [Header("Statistik Sementara Level Ini")]
+    public int coins;
+    public int currentScoreLevel;
+    public List<GarbageData> garbageHistory = new List<GarbageData>();
+
+    [Header("Sistem Nyawa")]
+    public AppHeartsUI HeartsUI;
+    public int maxHearts = 300;      
+    public int currentHearts;      
+    public bool isGameOver = false;
+
+    [Header("Game Economy Settings")]
+    [Tooltip("Persentase skor yang diubah jadi koin. Contoh: 0.5f berarti koin adalah 50% dari skor.")]
+    [SerializeField] private float coinConversionRate = 0.5f;
+    public static event Action<int, int> OnGameplayDataChanged;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        } 
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Start()
+    {        
+        currentHearts = maxHearts;
+        if (HeartsUI != null)
+        {
+            HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);
+        }
+
+        coins = 0;
+        currentScoreLevel = 0;
+
+        LoadAndSpawn();
+    }
+
+    void LoadAndSpawn()
+    {        
+        string organicName = PlayerPrefs.GetString("User_Equipped_Organic", "so");
+        string inorganicName = PlayerPrefs.GetString("User_Equipped_Anorganic", "sao");
+        string b3Name = PlayerPrefs.GetString("User_Equipped_B3", "sb3");
+
+        // FIX: Tambahkan gerbang pengaman jika AppInventoryManager belum siap di scene
+        if (AppInventoryManager.instance == null)
+        {
+            Debug.LogError("[AppGameManager] Gagal memuat data karena AppInventoryManager.instance tidak ditemukan di scene! Menggunakan ID default.");
+            return;
+        }
+
+        string organicID = AppInventoryManager.instance.userEquippedOrganic;
+        string inorganicID = AppInventoryManager.instance.userEquippedAnorganic;
+        string b3ID = AppInventoryManager.instance.userEquippedB3;
+
+        currentOrganicData = AppInventoryManager.instance.GetDataFromMaster(organicID);
+        currentInorganicData = AppInventoryManager.instance.GetDataFromMaster(inorganicID);
+        currentB3Data = AppInventoryManager.instance.GetDataFromMaster(b3ID);
+        
+        if (currentOrganicData == null || currentInorganicData == null || currentB3Data == null) 
+        {
+            Debug.LogError("Data Tong tidak ditemukan di Resources/TrashBins!");
+            return;
+        }
+
+        SetupBin(posOrganic, currentOrganicData, EcoGarbageCategory.Organic, organicID);
+        SetupBin(posInorganic, currentInorganicData, EcoGarbageCategory.Inorganic, inorganicID);
+        SetupBin(posB3, currentB3Data, EcoGarbageCategory.B3, b3ID);
+    }
+
+    void SetupBin(Transform spawnPos, TrashBinData data, EcoGarbageCategory type, string activeBinID)
+    {
+        if(data == null)
+        {
+            Debug.LogError($"[AppGameManager] Gagal setup tong {type} karena data ScriptableObject kosong!");
+            return;
+        }
+
+        if (baseBinPrefab == null)
+        {
+            Debug.LogError("[AppGameManager] Master Bin Prefab belum dimasukkan di Inspector!");
+            return;
+        }
+
+        GameObject bin = Instantiate(baseBinPrefab, spawnPos.position, Quaternion.identity);
+        bin.name = "Tong_" + type;
+        
+        SpriteRenderer sr = bin.GetComponent<SpriteRenderer>();
+        if (sr != null) 
+        {
+            sr.sprite = data.binIcon;
+        }
+        
+        if (bin.TryGetComponent<TrashBin>(out TrashBin binScript))
+        {
+            binScript.binType = type;
+            binScript.binData = data;
+
+            var ownedItem = AppInventoryManager.instance.playerInventory.Find(b => b.binID == activeBinID);
+            binScript.currentLevel = (ownedItem != null) ? ownedItem.currentLevel : 1;
+
+            binScript.InitializeBin();
+        }
+    }
+
+    public void RecordGarbageEntry(GarbageData enteredGarbage)
+    {
+        garbageHistory.Add(enteredGarbage);
+
+        currentScoreLevel += enteredGarbage.scorePoint;
+        int coinGarbage = Mathf.CeilToInt(enteredGarbage.scorePoint * coinConversionRate);
+        coins += coinGarbage;
+        OnGameplayDataChanged?.Invoke(currentScoreLevel, coins);
+
+        Debug.Log("Successfully recorded: " + enteredGarbage.garbageName);
+    }
+
+    public void RecordWrongEntry(GarbageData wrongGarbage)
+    {
+        if (isGameOver) return;
+
+        currentHearts -= wrongGarbage.penaltyPoint;
+
+        if (HeartsUI != null)
+        {
+            HeartsUI.UpdateHeartsVisuals(currentHearts, maxHearts);    
+        }
+
+        if (currentHearts <= 0)
+        {
+            currentHearts = 0;
+            TriggerGameOver();
+        }
+    }
+
+    public void TriggerGameOver()
+    {
+        if (isGameOver) return;
+        isGameOver = true;
+
+        try 
+        {
+            GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+            if (spawner != null)
+            {
+                spawner.enabled = false;              
+            }
+        }
+        catch (System.Exception e) { Debug.LogError("Error matikan spawner: " + e.Message); }
+
+        CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
+        try
+        {
+            WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+            foreach (WasteDraggable garbage in remainingGarbagess)
+            {
+                if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                garbage.enabled = false;
+            }
+        }
+        catch (System.Exception e) { Debug.LogError("Error bersihkan sampah di layar: " + e.Message); }
+
+        if (AppUIManager.instance != null)
+        {
+            AppUIManager.instance.ShowGameOver(organic, inorganic, b3, currentScoreLevel, coins);
+            ClaimReward();
+        }
+    }
+
+    // MODIFIKASI: Menyesuaikan kondisi menang mutlak ketika berhasil bertahan selama 4 menit penuh
+    public void CheckWinCondition()
+    {
+        if (isGameOver) return;
+        isGameOver = true;
+
+        CalculateLevelSummary(out int organic, out int inorganic, out int b3);
+
+        try
+        {
+            GarbageSpawner spawner = GameObject.FindAnyObjectByType<GarbageSpawner>();
+            if (spawner != null) spawner.enabled = false;
+
+            WasteDraggable[] remainingGarbagess = GameObject.FindObjectsByType<WasteDraggable>(FindObjectsInactive.Exclude);
+            foreach (WasteDraggable garbage in remainingGarbagess)
+            {
+                if (garbage.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                Destroy(garbage.gameObject);
+            }
+        }
+        catch (System.Exception e) { Debug.LogError("Error bersihkan sampah saat menang: " + e.Message); }
+
+        if (AppUIManager.instance != null)
+        {
+            AppUIManager.instance.ShowGameWin(organic, inorganic, b3, currentScoreLevel, coins);
+            ClaimReward();
+        }
+    }
+
+    public void ClaimReward()
+    {
+        if (coins > 0)
+        {
+            if (AppInventoryManager.instance != null)
+            {
+                AppInventoryManager.instance.AddCoins(coins);
+            }
+            coins = 0; 
+        }
+    }
+
+    private void CalculateLevelSummary(out int o, out int a, out int b3)
+    {
+        o = 0; a = 0; b3 = 0;
+        foreach (GarbageData garbage in garbageHistory)
+        {
+            if (garbage.type == EcoGarbageCategory.Organic) o++;
+            else if (garbage.type == EcoGarbageCategory.Inorganic) a++;
+            else if (garbage.type == EcoGarbageCategory.B3) b3++;
+        }
+    }
+}
+
+
+
+TrashBin
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class TrashBin : MonoBehaviour
+{
+    // Ini untuk menentukan tong ini jenis apa (Organik/Anorganik/B3)
+    // Nilainya akan diisi otomatis oleh AppGameManager saat game mulai
+    [Header("Manager References")]
+    public AppGameManager gameManager;
+
+    public TrashBinData binData;
+    public int currentLevel = 1;
+    public EcoGarbageCategory binType; 
+
+    [Header("UI Settings")]
+    public Slider capacityBar;
+    public TextMeshProUGUI capacityText;
+    private float currentAmount = 0f;
+    private float calculatedMaxCapacity;
+
+
+    public void Start()
+    {
+        if (gameManager == null)
+        {
+            gameManager = FindAnyObjectByType<AppGameManager>();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        GarbageItem item = other.GetComponent<GarbageItem>();
+        WasteDraggable dragScript = other.GetComponent<WasteDraggable>();
+
+        if (item != null && item.data != null && dragScript != null)
+        {
+            if (!dragScript.wasDraggedByPlayer)
+            {
+                Debug.Log("Cuma numpang lewat, jangan ditangkep.");
+                return;
+            }
+
+            GarbageData data = item.data;
+
+            if (data.type == binType)
+            {
+                if (currentAmount >= calculatedMaxCapacity)
+                {
+                    Debug.LogWarning($"Tong {binType} sudah PENUH! {data.garbageName} tidak bisa masuk.");
+                    
+                    Destroy(other.gameObject); 
+                    return;
+                }
+
+                dragScript.PlayFeedbackSFX(true);
+                AddProgress(1f);
+
+                if (gameManager != null)
+                {
+                    gameManager.RecordGarbageEntry(data);
+                    gameManager.CheckWinCondition();
+                }
+
+                Destroy(other.gameObject);
+            }
+            else
+            {
+                Debug.Log("SALAH! " + data.garbageName + " bukan di sini!");
+                dragScript.PlayFeedbackSFX(false);
+
+                if (other.TryGetComponent<WasteDraggable>(out WasteDraggable drag)) 
+                {
+                    drag.enabled = false;
+                }
+
+                if (other.TryGetComponent<Collider2D>(out Collider2D col)) col.enabled = false;
+                if (other.TryGetComponent<SpriteRenderer>(out SpriteRenderer sprite)) sprite.enabled = false;
+
+                if(gameManager != null)
+                {
+                    gameManager.RecordWrongEntry(data);
+                }
+
+                Destroy(other.gameObject);
+            }
+        }
+    }
+
+    void AddProgress(float amount)
+    {
+        currentAmount += amount;
+        currentAmount = Mathf.Clamp(currentAmount, 0, calculatedMaxCapacity);
+
+        UpdateUI();
+    }
+    void UpdateUI()
+    {
+        if (capacityBar)
+        {
+            capacityBar.maxValue = calculatedMaxCapacity;
+            capacityBar.value = currentAmount;
+        }
+
+        if (capacityText)
+        {
+            capacityText.text = Mathf.RoundToInt(currentAmount).ToString() + " / " + calculatedMaxCapacity.ToString();
+        }
+    }
+
+    public void InitializeBin()
+    {
+        if (gameManager == null)
+        {
+            gameManager = FindAnyObjectByType<AppGameManager>();
+        }
+
+        if (AppInventoryManager.instance != null)
+        {
+            string activeBinID = "";
+
+            switch(binType)
+            {
+                case EcoGarbageCategory.Organic:
+                    activeBinID = AppInventoryManager.instance.userEquippedOrganic;
+                    break;
+                case EcoGarbageCategory.Inorganic:
+                    activeBinID = AppInventoryManager.instance.userEquippedAnorganic;
+                    break;
+                case EcoGarbageCategory.B3:
+                    activeBinID = AppInventoryManager.instance.userEquippedB3;
+                    break;
+            }
+
+            binData = AppInventoryManager.instance.GetDataFromMaster(activeBinID);
+            var ownedData = AppInventoryManager.instance.playerInventory.Find(b => b.binID == activeBinID);
+            if (ownedData != null)
+            {
+                currentLevel = ownedData.currentLevel;
+            }
+            else
+            {
+                currentLevel = 1;
+            }
+        } else
+        {
+            Debug.LogWarning("AppInventoryManager tidak ditemukan! Menggunakan data fallback di Inspector.");
+        }
+
+        if (binData)
+        {
+            calculatedMaxCapacity = binData.GetTotalCapacity(currentLevel);
+            currentAmount = 0;
+
+            UpdateUI();
+            Debug.Log($"Tong {binType} siap! Level: {currentLevel}, Kapasitas: {calculatedMaxCapacity}");
+        }
+    }
+
+    public bool IsBinFull()
+    {
+        return currentAmount >= calculatedMaxCapacity;
+    }
+}
+
+
+GamePlay
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
+public class GamePlay : MonoBehaviour
+{
+    public static GamePlay Instance;
+    [Header("Ui Components")]
+    public Image backgroundGameplay;
+    public TextMeshProUGUI minuteText;
+    public TextMeshProUGUI secondText;
+
+    [Header("Trash Bin")]
+    public Image tbOrganik;
+    public Image tbAnOrganik;
+    public Image tbB3;
+
+    [Header("Progress Bars")]
+    public Slider barTbOrganik;
+    public Slider barTbAnOrganik;
+    public Slider barTbB3;
+
+    [Header("Text Mash Pro Bar")]
+    public TMP_Text txtTbBarOrganik;
+    public TMP_Text txtTbBarAnOrganik;
+    public TMP_Text txtTbBarB3;
+
+    [HideInInspector] public float gameElapsedTime = 0f;
+
+    private float totalGameDuration = 240f; 
+    private bool isTimerFinished = false;
+
+    private Coroutine bounceCoroutine;
+    private Transform timerParentTransform;
+
+    void Awake()
+    {
+        if (Instance == null) { Instance = this; }
+    }
+
+    void Start()
+    {
+        if (minuteText != null) timerParentTransform = minuteText.transform.parent;
+    }
+
+    void Update()
+    {
+        if (isTimerFinished) return;
+
+        gameElapsedTime += Time.deltaTime;
+
+        float timeRemaining = totalGameDuration - gameElapsedTime;
+
+        if (timeRemaining <= 0f)
+        {
+            timeRemaining = 0f;
+            isTimerFinished = true;
+            TriggerTimeOut(); 
+        }
+
+        int menit = Mathf.FloorToInt(timeRemaining / 60f); 
+        int detik = Mathf.FloorToInt(timeRemaining % 60f);
+
+        if (secondText != null)
+        {
+            secondText.text = detik.ToString("00");
+        }
+
+        if (minuteText != null)
+        {
+            minuteText.text = menit.ToString() + " Min";
+        }
+    }
+
+    // private void TriggerTimeOut()
+    // {
+    //     Debug.Log("[GAMEPLAY] Waktu 4 Menit Habis!");
+
+    //     AppGameManager gameManager = GameObject.FindAnyObjectByType<AppGameManager>();
+    //     if (gameManager != null)
+    //     {
+    //         gameManager.CheckWinCondition(); 
+    //     }
+    // }
+
+    private void TriggerTimeOut()
+    {
+        Debug.Log("[GAMEPLAY] Waktu 4 Menit Habis! Memeriksa kondisi tong...");
+
+        AppGameManager gameManager = GameObject.FindAnyObjectByType<AppGameManager>();
+        if (gameManager != null)
+        {
+            gameManager.CheckWinConditionOnTimeOut(); 
+        }
+    }
+
+    public void SetDifficultyVisuals(int difficultyLevel)
+    {
+        Color targetColor = Color.white;
+
+        switch (difficultyLevel)
+        {
+            case 0:
+                targetColor = Color.white;
+                break;
+            case 1:
+                targetColor = Color.yellow;
+                break;
+            case 2:
+                targetColor = new Color(1f, 0.5f, 0f); 
+                break;
+            default:
+                targetColor = Color.red;
+                break;
+        }
+
+        if (minuteText != null) minuteText.color = targetColor;
+        if (secondText != null) secondText.color = targetColor;
+
+        if (bounceCoroutine != null) StopCoroutine(bounceCoroutine);
+        bounceCoroutine = StartCoroutine(BounceTimerRoutine());
+    }
+
+    IEnumerator BounceTimerRoutine()
+    {
+        Transform targetTransform = (timerParentTransform != null) ? timerParentTransform : minuteText.transform;
+        
+        if (targetTransform == null) yield break;
+
+        Vector3 originalScale = Vector3.one;
+        Vector3 targetScale = new Vector3(1.3f, 1.3f, 1.3f);
+        
+        float duration = 0.25f;
+        float elapsed = 0f;
+
+        while (elapsed < duration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            targetTransform.localScale = Vector3.Lerp(originalScale, targetScale, elapsed / (duration / 2f));
+            yield return null;
+        }
+
+        elapsed = 0f;
+
+        while (elapsed < duration / 2f)
+        {
+            elapsed += Time.deltaTime;
+            targetTransform.localScale = Vector3.Lerp(targetScale, originalScale, elapsed / (duration / 2f));
+            yield return null;
+        }
+
+        targetTransform.localScale = originalScale;
+    }
+
+    public void HandleChangeScene(string nameScene)
+    {
+        Debug.Log("Tombol diklik! Mencoba berpindah ke scene: " + nameScene);
+        
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nameScene);
+    }
+}

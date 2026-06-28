@@ -4,10 +4,11 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class Shop: MonoBehaviour
+public class Shop : MonoBehaviour
 {
     [Header("UI References")]
     public TextMeshProUGUI coinAmount;
+    
     [Header("Layout Settings")]
     [SerializeField] private Transform gridAreaParent; 
     [SerializeField] private GameObject cardPrefab;  
@@ -34,9 +35,10 @@ public class Shop: MonoBehaviour
         {
             if (itemData == null || string.IsNullOrEmpty(itemData.binID)) continue;
 
-            bool isOwned = AppInventoryManager.instance.playerInventory.Exists(b => b.binID == itemData.binID);
-
+            var ownedItem = AppInventoryManager.instance.playerInventory.Find(b => b.binID == itemData.binID);
+            bool isOwned = (ownedItem != null);
             bool isEquipped = AppInventoryManager.instance.CheckIfEquipped(itemData);
+            
             GameObject cardGo = Instantiate(cardPrefab, gridAreaParent);
             AppCardOffer controller = cardGo.GetComponent<AppCardOffer>();
 
@@ -54,7 +56,8 @@ public class Shop: MonoBehaviour
     {
         if (data == null) return;
 
-        bool currentOwned = AppInventoryManager.instance.playerInventory.Exists(b => b.binID == data.binID);
+        var ownedItem = AppInventoryManager.instance.playerInventory.Find(b => b.binID == data.binID);
+        bool currentOwned = (ownedItem != null); 
         bool currentEquipped = AppInventoryManager.instance.CheckIfEquipped(data);
 
         if (currentEquipped) return;
@@ -66,6 +69,7 @@ public class Shop: MonoBehaviour
         }
         else
         {
+            Debug.Log($"[Shop Debug] Mencoba membeli. Harga: {data.basePrice} | Koin Asli di Script: {AppInventoryManager.instance.totalCoins}");
             bool canBuy = AppInventoryManager.instance.SpendCoins(data.basePrice);
 
             if (canBuy)
@@ -80,6 +84,7 @@ public class Shop: MonoBehaviour
             }
         }
 
+        // Refresh tampilan UI toko setelah status koin/item berubah
         RenderShopItems();
     }
 }

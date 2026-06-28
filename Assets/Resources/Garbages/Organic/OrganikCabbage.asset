@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikCabbage
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikCabbage
+  garbageName: Kubis
   garbageIcon: {fileID: -4346433898014200607, guid: 2f5131dc30ad43140b56b0f327667874, type: 3}
   type: 0
   scorePoint: 9

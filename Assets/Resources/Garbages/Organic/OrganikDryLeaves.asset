@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikDryLeaves
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikDryLeaves
+  garbageName: Daun Kering
   garbageIcon: {fileID: 5358524543787067038, guid: 61d130c976443e14598826f07db67bd1, type: 3}
   type: 0
   scorePoint: 5

@@ -10,33 +10,31 @@ public class GarbageSpawner : MonoBehaviour
     public Vector2 spawnRangeX = new Vector2(-7f, 7f);
     public Vector2 spawnRangeY = new Vector2(-4f, 4f);
 
-
     [Header("Base Settings (Awal Game)")]
     [Tooltip("Jeda waktu awal antar spawn (detik)")]
-    public float baseSpawnInterval = 2f;   
+    public float baseSpawnInterval = 1.6f;   
     [Tooltip("Jumlah minimal sampah di awal game")]
     public int baseMinSpawn = 1;
     [Tooltip("Jumlah maksimal sampah di awal game")]
     public int baseMaxSpawn = 2; 
 
     [Header("Difficulty Progression (Tingkat Kesulitan)")]
-    [Tooltip("Setiap berapa detik kesulitan akan naik? (60 = 1 menit)")]
-    public float difficultyInterval = 60f;
+    [Tooltip("Setiap berapa detik kesulitan akan naik? (35 detik sekali sangat pas untuk game 4 menit)")]
+    public float difficultyInterval = 35f;
     [Tooltip("Pengurangan jeda waktu setiap tingkat kesulitan naik")]
-    public float intervalDecrease = 0.25f;
+    public float intervalDecrease = 0.22f;
     [Tooltip("Batas paling cepat jeda spawn (detik)")]
     public float minAllowedInterval = 0.4f;
     [Tooltip("Penambahan jumlah maksimal sampah yang keluar setiap kesulitan naik")]
     public int maxSpawnIncrease = 1;
     [Tooltip("Batas paling banyak sampah yang boleh keluar sekaligus")]
-    public int absoluteMaxSpawn = 6;
+    public int absoluteMaxSpawn = 5;
 
     // Variabel dinamis internal
     private float currentSpawnInterval;
     private int currentMinSpawn;
     private int currentMaxSpawn;
     private int lastDifficultyLevel = 0;
-
 
     private List<int> lockedSpawnIndices = new List<int>();
     private int currentListIndex = 0;
@@ -50,7 +48,6 @@ public class GarbageSpawner : MonoBehaviour
         currentMinSpawn = baseMinSpawn;
         currentMaxSpawn = baseMaxSpawn;
 
-
         InitializeShuffleDeck();
         StartCoroutine(SpawnRoutine());
     }
@@ -60,6 +57,9 @@ public class GarbageSpawner : MonoBehaviour
         if (GamePlay.Instance != null)
         {
             float totalWaktuGame = GamePlay.Instance.gameElapsedTime;
+
+            // Membatasi alur agar spawner berhenti menaikkan tingkat kesulitan jika waktu sudah lewat 4 menit (240 detik)
+            if (totalWaktuGame > 240f) return;
 
             int currentDifficultyLevel = Mathf.FloorToInt(totalWaktuGame / difficultyInterval);
 
@@ -157,11 +157,12 @@ public class GarbageSpawner : MonoBehaviour
             rb.AddForce(randomForce, ForceMode2D.Impulse);
         }
 
-        float destroyDelay = currentSpawnInterval * 2.5f;
+        // Mengubah pengali menjadi 3.0f agar sampah tidak terlalu lama menumpuk saat tempo spawn sangat cepat
+        float destroyDelay = currentSpawnInterval * 3.0f;
 
-        if (destroyDelay < 1.5f) 
+        if (destroyDelay < 1.8f) 
         {
-            destroyDelay = 1.5f;
+            destroyDelay = 1.8f;
         }
 
         GarbageVisual visualScript = go.GetComponent<GarbageVisual>();

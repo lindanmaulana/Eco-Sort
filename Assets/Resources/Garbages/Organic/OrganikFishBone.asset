@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikFishBone
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikFishbone
+  garbageName: Tulang Ikan
   garbageIcon: {fileID: 4742448479378110212, guid: 96e0b4446e5b8fe4280b58c6cbbdb8e5, type: 3}
   type: 0
   scorePoint: 7

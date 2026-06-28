@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikCheese
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikCheese
+  garbageName: Keju
   garbageIcon: {fileID: 4343754905218278465, guid: 17dd968a39a3d144581e987e82149219, type: 3}
   type: 0
   scorePoint: 15

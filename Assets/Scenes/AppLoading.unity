@@ -963,7 +963,7 @@ MonoBehaviour:
   playerInventory: []
   userEquippedOrganic: 
   userEquippedAnorganic: 
-  userEequippedB3: 
+  userEquippedB3: 
 --- !u!1 &1403921677
 GameObject:
   m_ObjectHideFlags: 0
@@ -1084,6 +1084,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LoadingToGame
   loadingSlider: {fileID: 1403921679}
   sceneToLoad: MainMenu
+  defaultBackgroundMusic: {fileID: 11400000, guid: d7755fd04b7df7d4eb296f4bbf51560f, type: 2}
 --- !u!4 &1487686777
 Transform:
   m_ObjectHideFlags: 0

@@ -19,7 +19,7 @@ public class AppInventoryManager: MonoBehaviour
     [Header("Equipped Bins")]
     public string userEquippedOrganic;
     public string userEquippedAnorganic;
-    public string userEequippedB3;
+    public string userEquippedB3;
 
     void Awake()
     {
@@ -52,7 +52,7 @@ public class AppInventoryManager: MonoBehaviour
 
         userEquippedOrganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_ORGANIC, "so");
         userEquippedAnorganic = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, "sao");
-        userEequippedB3 = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_B3, "sb3");
+        userEquippedB3 = PlayerPrefs.GetString(DataKeyPlayerPrefs.EQUIP_B3, "sb3");
 
         if (!PlayerPrefs.HasKey(DataKeyPlayerPrefs.INVENTORY_SAVED)) {
             playerInventory.Clear();
@@ -119,8 +119,8 @@ public class AppInventoryManager: MonoBehaviour
                     PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_INORGANIC, userEquippedAnorganic);
                     break;
                 case EcoGarbageCategory.B3:
-                    userEequippedB3 = binID;
-                    PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, userEequippedB3);
+                    userEquippedB3 = binID;
+                    PlayerPrefs.SetString(DataKeyPlayerPrefs.EQUIP_B3, userEquippedB3);
                     break;
             }
 
@@ -137,7 +137,7 @@ public class AppInventoryManager: MonoBehaviour
         {
             EcoGarbageCategory.Organic => userEquippedOrganic == binData.binID,
             EcoGarbageCategory.Inorganic => userEquippedAnorganic == binData.binID,
-            EcoGarbageCategory.B3 => userEequippedB3 == binData.binID,
+            EcoGarbageCategory.B3 => userEquippedB3 == binData.binID,
             _ => false
         };
     }
@@ -195,8 +195,6 @@ public class AppInventoryManager: MonoBehaviour
         OwnedBin bin = playerInventory.Find(b => b.binID == binID);
         return (bin != null) ? bin.currentLevel : 1;
     }
-
-
 
     public void LoadDataCoins()
     {

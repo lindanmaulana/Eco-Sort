@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikTwigs
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikTwigs
+  garbageName: Ranting
   garbageIcon: {fileID: -2967323256554456134, guid: 5e9af37c786948147abd51636ed53625, type: 3}
   type: 0
   scorePoint: 12

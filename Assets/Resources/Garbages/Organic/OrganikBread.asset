@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: OrganikBread
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageOrganikBread
+  garbageName: Roti
   garbageIcon: {fileID: -2557520600957636327, guid: 61547544b67e9ac4ebb7840af98527dc, type: 3}
   type: 0
   scorePoint: 19

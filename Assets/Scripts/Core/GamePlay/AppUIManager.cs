@@ -35,6 +35,15 @@ public class AppUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textRecapTotalTrash;
     [SerializeField] private TextMeshProUGUI textRecapScore;
     [SerializeField] private TextMeshProUGUI textRecapCoinsReward;
+    
+
+    [Header("TextMeshPro Rekapitulasi (Panel Game Win)")]
+    [SerializeField] private TextMeshProUGUI winRecapOrganik;
+    [SerializeField] private TextMeshProUGUI winRecapAnorganik;
+    [SerializeField] private TextMeshProUGUI winRecapB3;
+    [SerializeField] private TextMeshProUGUI winRecapTotalTrash;
+    [SerializeField] private TextMeshProUGUI winRecapScore;
+    [SerializeField] private TextMeshProUGUI winRecapCoinsReward;
 
     private void Awake()
     {
@@ -87,6 +96,9 @@ public class AppUIManager : MonoBehaviour
     {
         if (panelGameOver != null)
         {
+            if (panelPause != null) panelPause.SetActive(false);
+            IsPaused = false;
+
             panelGameOver.SetActive(true);
 
             if (EventSystem.current != null)
@@ -121,43 +133,50 @@ public class AppUIManager : MonoBehaviour
         }
     }
 
-    public void ShowGameWin()
-    {
-        if (panelGameWin != null)
-        {
-            panelGameWin.SetActive(true);
-        }
-    }
-    // public void ShowGameWin(int organic, int inorganic, int b3, int scoreLevel, int coinsEarned)
+    // public void ShowGameWin()
     // {
     //     if (panelGameWin != null)
     //     {
+    //         if (panelPause != null) panelPause.SetActive(false);
+    //         IsPaused = false;
+
     //         panelGameWin.SetActive(true);
-
-    //         if (EventSystem.current != null)
-    //         {
-    //             EventSystem.current.SetSelectedGameObject(null); 
-    //         }
-
-    //         if (winRecapOrganik != null) winRecapOrganik.text = organic + " Item";
-    //         if (winRecapAnorganik != null) winRecapAnorganik.text = inorganic + " Item";
-    //         if (winRecapB3 != null) winRecapB3.text = b3 + " Item";
-            
-    //         int grandTotal = organic + inorganic + b3;
-    //         if (winRecapTotalTrash != null) winRecapTotalTrash.text = grandTotal + " Item";
-
-    //         if (winRecapScore != null) winRecapScore.text = scoreLevel + " PTS";
-    //         if (winRecapCoinsReward != null) winRecapCoinsReward.text = "+" + coinsEarned;
-
-    //         DisableAllGarbageDraggables();
-
-    //         Time.timeScale = 0f;
-    //         Cursor.lockState = CursorLockMode.None;
-    //         Cursor.visible = true;
-            
-    //         Debug.Log("[AppUIManager] Game Win Screen Sukses Aktif dengan data rekap dinamis!");
     //     }
     // }
+
+    public void ShowGameWin(int organic, int inorganic, int b3, int scoreLevel, int coinsEarned)
+    {
+        if (panelGameWin != null)
+        {
+            if (panelPause != null) panelPause.SetActive(false);
+            IsPaused = false;
+
+            panelGameWin.SetActive(true);
+
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(null); 
+            }
+
+            if (winRecapOrganik != null) winRecapOrganik.text = organic + " Item";
+            if (winRecapAnorganik != null) winRecapAnorganik.text = inorganic + " Item";
+            if (winRecapB3 != null) winRecapB3.text = b3 + " Item";
+            
+            int grandTotal = organic + inorganic + b3;
+            if (winRecapTotalTrash != null) winRecapTotalTrash.text = grandTotal + " Item";
+
+            if (winRecapScore != null) winRecapScore.text = scoreLevel + " PTS";
+            if (winRecapCoinsReward != null) winRecapCoinsReward.text = "+" + coinsEarned;
+
+            DisableAllGarbageDraggables();
+
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            
+            Debug.Log("[AppUIManager] Game Win Screen Sukses Aktif dengan data rekap dinamis!");
+        }
+    }
 
     // --- Fungsionalitas Tombol Panel ---
     public void RestartLevel()

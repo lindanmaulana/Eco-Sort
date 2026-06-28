@@ -7,6 +7,7 @@ public class AudioManager : MonoBehaviour
     [Header("---- Audio Sources ----")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
+    
 
     void Awake()
     {
@@ -22,7 +23,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // Fungsi untuk memutar musik background (Looping)
     public void PlayMusic(AudioClip musicClip)
     {
         if (musicClip == null) return;
@@ -34,18 +34,25 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
-    // Fungsi untuk mematikan musik
     public void StopMusic()
     {
         musicSource.Stop();
     }
 
-    // Fungsi pusat untuk menyalakan SFX menggunakan data dari AudioEvent
     public void PlaySFX(AudioEvent audioEvent)
     {
         if (audioEvent == null) return;
         
-        // Kita perintahkan si AudioEvent untuk bunyi menggunakan SFX Source kita
         audioEvent.Play(sfxSource);
+    }
+
+    public void SetMusicMute(bool isMute)
+    {
+        musicSource.mute = isMute;
+    }
+
+    public void SetSFXMute(bool isMute)
+    {
+        sfxSource.mute = isMute;
     }
 }

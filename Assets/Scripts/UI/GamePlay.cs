@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-public class GamePlay: MonoBehaviour
+public class GamePlay : MonoBehaviour
 {
     public static GamePlay Instance;
     [Header("Ui Components")]
@@ -22,7 +22,6 @@ public class GamePlay: MonoBehaviour
     public Slider barTbAnOrganik;
     public Slider barTbB3;
 
-
     [Header("Text Mash Pro Bar")]
     public TMP_Text txtTbBarOrganik;
     public TMP_Text txtTbBarAnOrganik;
@@ -30,13 +29,14 @@ public class GamePlay: MonoBehaviour
 
     [HideInInspector] public float gameElapsedTime = 0f;
 
-    // Tracker Coroutine untuk animasi bounce agar tidak bertabrakan
+    private float totalGameDuration = 240f; 
+    private bool isTimerFinished = false;
+
     private Coroutine bounceCoroutine;
     private Transform timerParentTransform;
 
     void Awake()
     {
-        // Inisialisasi Singleton
         if (Instance == null) { Instance = this; }
     }
 
@@ -47,11 +47,22 @@ public class GamePlay: MonoBehaviour
 
     void Update()
     {
+        if (isTimerFinished) return;
+
         gameElapsedTime += Time.deltaTime;
 
-        int menit = Mathf.FloorToInt(gameElapsedTime / 60f); 
-        int detik = Mathf.FloorToInt(gameElapsedTime % 60f);
+        float timeRemaining = totalGameDuration - gameElapsedTime;
 
+        if (timeRemaining <= 0f)
+        {
+            timeRemaining = 0f;
+            isTimerFinished = true;
+            TriggerTimeOut(); 
+        }
+
+        int totalSecondsCeil = Mathf.CeilToInt(timeRemaining);
+        int menit = totalSecondsCeil / 60; 
+        int detik = totalSecondsCeil % 60;
 
         if (secondText != null)
         {
@@ -61,6 +72,17 @@ public class GamePlay: MonoBehaviour
         if (minuteText != null)
         {
             minuteText.text = menit.ToString() + " Min";
+        }
+    }
+
+    private void TriggerTimeOut()
+    {
+        Debug.Log("[GAMEPLAY] Waktu 4 Menit Habis! Memeriksa kondisi tong...");
+
+        AppGameManager gameManager = GameObject.FindAnyObjectByType<AppGameManager>();
+        if (gameManager != null)
+        {
+            gameManager.CheckWinConditionOnTimeOut(); 
         }
     }
 
@@ -77,7 +99,7 @@ public class GamePlay: MonoBehaviour
                 targetColor = Color.yellow;
                 break;
             case 2:
-                targetColor = new Color(1f, 0.5f, 0f); // Orange
+                targetColor = new Color(1f, 0.5f, 0f); 
                 break;
             default:
                 targetColor = Color.red;
@@ -87,7 +109,6 @@ public class GamePlay: MonoBehaviour
         if (minuteText != null) minuteText.color = targetColor;
         if (secondText != null) secondText.color = targetColor;
 
-        // Picu animasi bounce pada UI Timer
         if (bounceCoroutine != null) StopCoroutine(bounceCoroutine);
         bounceCoroutine = StartCoroutine(BounceTimerRoutine());
     }
@@ -130,5 +151,4 @@ public class GamePlay: MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene(nameScene);
     }
-
 }

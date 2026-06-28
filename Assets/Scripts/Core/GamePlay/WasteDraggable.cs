@@ -14,6 +14,10 @@ public class WasteDraggable : MonoBehaviour
     [Header("Settings")]
     public float constantSpeed = 3f;
 
+    [Header("---- Audio Settings (BARU) ----")]
+    [SerializeField] private AudioEvent correctSortSFX;
+    [SerializeField] private AudioEvent wrongSortSFX;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -49,14 +53,12 @@ public class WasteDraggable : MonoBehaviour
 
     void Update()
     {
-        // 1. TARUH DI PALING ATAS & PAKSA RESET STATUS DRAG
         if (gameManager != null && gameManager.isGameOver)
         {
-            isDragging = false; // Paksa lepas status seret!
-            return; // Keluar dari fungsi, semua kode di bawah dicuekin
+            isDragging = false; 
+            return; 
         }
 
-        // 2. SISA KODE DRAG-DROP KAMU YANG LAMA (Ditaruh di bawahnya)
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0;
@@ -81,35 +83,56 @@ public class WasteDraggable : MonoBehaviour
         {
             rb.MovePosition(mouseWorldPos);
         }
+    }
 
-        // Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-        // Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
-        // mouseWorldPos.z = 0;
+    public void PlayFeedbackSFX(bool isCorrect)
+    {
+        bool isSFXOn = PlayerPrefs.GetInt(DataKeyPlayerPrefs.SETTING_SOUND_BACKGROUND, 1) == 1;
+        if (isSFXOn && AudioManager.instance != null)
+        {
+            if (isCorrect && correctSortSFX != null)
+            {
+                AudioManager.instance.PlaySFX(correctSortSFX);
+            }
+            else if (!isCorrect && wrongSortSFX != null)
+            {
+                AudioManager.instance.PlaySFX(wrongSortSFX);
+            }
+        }
 
-        // if (gameManager != null && gameManager.isGameOver)
-        // {
-        //     return;
-        // }
+        if (!isCorrect)
+        {
+            bool isVibrationOn = PlayerPrefs.GetInt(DataKeyPlayerPrefs.SETTING_VIBRATE_BACKGROUND, 1) == 1;
+            
+            if (isVibrationOn)
+            {
+                TriggerWrongHaptic();
+            }
+        }
+    }
 
-        // if (Mouse.current.leftButton.wasPressedThisFrame)
-        // {
-        //     if (myCollider == Physics2D.OverlapPoint(mouseWorldPos))
-        //     {
-        //         isDragging = true;
-        //         wasDraggedByPlayer = true;
-        //         rb.linearVelocity = Vector2.zero;
-        //     }
-        // }
-
-        // if (Mouse.current.leftButton.wasReleasedThisFrame && isDragging)
-        // {
-        //     isDragging = false;
-        //     Launch();
-        // }
-
-        // if (isDragging)
-        // {
-        //     rb.MovePosition(mouseWorldPos);
-        // }
+    private void TriggerWrongHaptic()
+    {
+        #if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            using (AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            using (AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+            using (AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator"))
+            {
+                if (vibrator != null)
+                {
+                    vibrator.Call("vibrate", (long)60); 
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Gagal memicu getar Android custom: " + e.Message);
+            Handheld.Vibrate(); 
+        }
+        #else
+        Handheld.Vibrate();
+        #endif
     }
 }

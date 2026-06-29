@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganicBox
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganicBox
+  garbageName: Kardus
   garbageIcon: {fileID: 947651269642977257, guid: 4f185357b5af63c4baffa1dd89c5f849, type: 3}
   type: 1
   scorePoint: 12

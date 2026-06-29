@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: B3Dirigen
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageB3Dirigen
+  garbageName: Dirigen
   garbageIcon: {fileID: -835552060136238880, guid: 57592facdf49e154680df0e5faa109f3, type: 3}
   type: 2
   scorePoint: 40

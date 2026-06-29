@@ -84,7 +84,6 @@ public class Shop : MonoBehaviour
             }
         }
 
-        // Refresh tampilan UI toko setelah status koin/item berubah
         RenderShopItems();
     }
 }

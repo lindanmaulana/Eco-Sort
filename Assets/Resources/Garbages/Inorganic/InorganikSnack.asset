@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikSnack
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikSnack
+  garbageName: Snack
   garbageIcon: {fileID: -1805019450817629678, guid: 46745d28fbbe2c24e8656ebaadd6900f, type: 3}
   type: 1
   scorePoint: 9

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikPaper
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikPaper
+  garbageName: Kertas
   garbageIcon: {fileID: 7429981856640488826, guid: ac8543c8849b1d24dbc63207c5e75c00, type: 3}
   type: 1
   scorePoint: 8

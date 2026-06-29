@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikAbc
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikAbc
+  garbageName: Kopi Abc
   garbageIcon: {fileID: -8113279413686672160, guid: 3c77d71c351cb6249b4c1e380e063354, type: 3}
   type: 1
   scorePoint: 12

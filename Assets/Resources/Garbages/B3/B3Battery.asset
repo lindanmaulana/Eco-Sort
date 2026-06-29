@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: B3Battery
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageB3Battery
+  garbageName: Baterai
   garbageIcon: {fileID: 841953228313618512, guid: c3b9774bf19bfd74193c14c11848d2ba, type: 3}
   type: 2
   scorePoint: 50

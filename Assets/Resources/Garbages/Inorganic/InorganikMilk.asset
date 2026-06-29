@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikMilk
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikMilk
+  garbageName: Kotak Susu
   garbageIcon: {fileID: -8668791390375645840, guid: 832b6b1ba4fcb104c9c306e22880cdb3, type: 3}
   type: 1
   scorePoint: 18

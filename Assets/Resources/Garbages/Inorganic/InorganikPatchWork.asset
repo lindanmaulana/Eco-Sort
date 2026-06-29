@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikPatchWork
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikPatchWork
+  garbageName: Kain Perca
   garbageIcon: {fileID: -4519145069327635414, guid: 9a8a9b6fa22f96d4d8f11d7a896a44ab, type: 3}
   type: 1
   scorePoint: 10

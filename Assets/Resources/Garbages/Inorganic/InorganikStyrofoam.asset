@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikStyrofoam
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikStyrofoam
+  garbageName: Styrofoam
   garbageIcon: {fileID: 8455003773031294284, guid: 8d639d87fa8f62e4daac38463803b1c0, type: 3}
   type: 1
   scorePoint: 14

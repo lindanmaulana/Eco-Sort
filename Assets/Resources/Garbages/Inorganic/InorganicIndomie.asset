@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganicIndomie
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganicIndomie
+  garbageName: Indomie
   garbageIcon: {fileID: -7848830374292144296, guid: 4211115b33ef22a4c8918efc396b9f3f, type: 3}
   type: 1
   scorePoint: 15

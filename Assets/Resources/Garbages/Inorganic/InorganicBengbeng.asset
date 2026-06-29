@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganicBengbeng
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganicBengbeng
+  garbageName: Bengbeng
   garbageIcon: {fileID: -1701513376925760502, guid: cc0fff035e0280d4c8c1f1f49ddadcde, type: 3}
   type: 1
   scorePoint: 15

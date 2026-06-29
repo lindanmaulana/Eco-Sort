@@ -7,6 +7,10 @@ public class UpgradeTrashBinManager : MonoBehaviour
     [SerializeField] private GameObject upgradeCardPrefab;
     [SerializeField] private Transform contentContainer;
 
+    [Header("Audio Upgrade Settings")]
+    [SerializeField] private AudioEvent upgradeSuccessSFX;
+    [SerializeField] private AudioEvent upgradeFailSFX;
+
     private void OnEnable()
     {
         RenderUpgradeList();
@@ -52,16 +56,28 @@ public class UpgradeTrashBinManager : MonoBehaviour
 
     private void TriggerUpgradeProcess(string binID, int cost)
     {
+        bool isSFXOn = PlayerPrefs.GetInt(DataKeyPlayerPrefs.SETTING_SOUND_BACKGROUND, 1) == 1;
+
         if (AppInventoryManager.instance.totalCoins >= cost)
         {
             AppInventoryManager.instance.SpendCoins(cost);
             AppInventoryManager.instance.UpgradeOwnedBin(binID);
+
+            if (isSFXOn && AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(upgradeSuccessSFX);
+            }
 
             RenderUpgradeList();
             Debug.Log($"[Upgrade] Berhasil upgrade {binID}. Koin berkurang {cost}");
         }
         else
         {
+            if (isSFXOn && AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(upgradeFailSFX);
+            }
+            
             Debug.LogWarning("[Upgrade] Koin kamu tidak cukup!");
         }
     }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikTshirt
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikTshirt
+  garbageName: Kaos
   garbageIcon: {fileID: 7903787430270544208, guid: 6e09caff68cfdf94bbaa29c6dbd46083, type: 3}
   type: 1
   scorePoint: 16

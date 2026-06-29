@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: B3Spray
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageB3Spray
+  garbageName: Kaleng Semprot
   garbageIcon: {fileID: -6179392687513203869, guid: d2baae279f0f75748b2c5b8ab40a628e, type: 3}
   type: 2
   scorePoint: 45

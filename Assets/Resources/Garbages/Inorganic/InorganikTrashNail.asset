@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikTrashNail
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbagenInorganikTrashnail
+  garbageName: Paku
   garbageIcon: {fileID: 3102763733369323147, guid: b4050744e35678b4ba741328a589b1fd, type: 3}
   type: 1
   scorePoint: 8

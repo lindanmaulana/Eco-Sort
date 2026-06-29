@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970ba5812c834644795ab97efae93d3c, type: 3}
   m_Name: InorganikChitato
   m_EditorClassIdentifier: Assembly-CSharp::GarbageData
-  garbageName: GarbageInorganikChitato
+  garbageName: Snack Chitato
   garbageIcon: {fileID: -679193067919799645, guid: 4667963266042224a97560e31e758877, type: 3}
   type: 1
   scorePoint: 14

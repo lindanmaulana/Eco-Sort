@@ -20,7 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tips.unity
     guid: d2385fd7bf0c3b340b08a22fa8451b4a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Shop.unity
     guid: 01c821e977923044f99e9767b37de50a
   - enabled: 1
@@ -29,7 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Inventory.unity
     guid: 25bad6ae0241db944a9cb15b256938b8
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/GameOver.unity
     guid: 171302f1be11d5a4b9f4e72b72f3b2ec
   m_configObjects:
